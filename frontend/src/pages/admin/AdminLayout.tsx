@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, Outlet, Routes, Route } from 'react-router-dom';  // Добавил Routes, Route для вложенных роутов
+import { Link, useLocation, Outlet, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -15,8 +15,9 @@ import {
   X
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
-import Dashboard from './Dashboard';  // Импорт Dashboard
-import ProductsManagement from './ProductsManagement';  // Импорт ProductsManagement
+// Добавляю импорты для вложенных страниц
+import Dashboard from './Dashboard';
+import ProductsManagement from './ProductsManagement';
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -111,7 +112,11 @@ const AdminLayout: React.FC = () => {
       <div className="flex-1 flex flex-col">
         {/* Page Content */}
         <main className="flex-1 overflow-auto p-6">
-          <Outlet />
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/products" element={<ProductsManagement />} />
+            {/* Добавьте другие маршруты здесь */}
+          </Routes>
         </main>
       </div>
     </div>
