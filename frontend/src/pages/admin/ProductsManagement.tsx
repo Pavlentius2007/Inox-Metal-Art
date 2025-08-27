@@ -1,0 +1,299 @@
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Plus, 
+  Search, 
+  Filter, 
+  Edit, 
+  Trash2, 
+  Eye,
+  Package,
+  Palette,
+  Star,
+  Shield
+} from 'lucide-react';
+import Button from '../../components/ui/Button';
+import Card from '../../components/ui/Card';
+import Modal from '../../components/ui/Modal';
+
+interface Product {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+  features: string[];
+  image: string;
+  status: 'active' | 'inactive';
+  createdAt: string;
+}
+
+const ProductsManagement: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([
+    {
+      id: '1',
+      name: 'Titanium PVD покрытие',
+      category: 'Декоративные покрытия',
+      description: 'Вакуумное напыление нитридов титана на нержавеющую сталь',
+      features: ['Яркие декоративные цвета', 'Устойчивость к коррозии', '30+ лет проверенной надежности'],
+      image: '/placeholder.jpg',
+      status: 'active',
+      createdAt: '2024-01-15'
+    },
+    {
+      id: '2',
+      name: 'Nano Scratch Resistant (NSR™)',
+      category: 'Защитные покрытия',
+      description: 'Нанопокрытие против царапин',
+      features: ['В 4 раза тверже обычной стали', 'Идеально для лифтов и кухонь', 'Защита от царапин'],
+      image: '/placeholder.jpg',
+      status: 'active',
+      createdAt: '2024-01-10'
+    }
+  ]);
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+
+  const categories = [
+    'Декоративные покрытия',
+    'Защитные покрытия',
+    'Антибактериальные покрытия',
+    'Цветные покрытия',
+    'Текстурированные покрытия'
+  ];
+
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         product.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
+  const handleAddProduct = (productData: Partial<Product>) => {
+    const newProduct: Product = {
+      id: Date.now().toString(),
+      name: productData.name || '',
+      category: productData.category || categories[0],
+      description: productData.description || '',
+      features: productData.features || [],
+      image: productData.image || '/placeholder.jpg',
+      status: 'active',
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+    
+    setProducts(prev => [...prev, newProduct]);
+    setShowAddModal(false);
+  };
+
+  const handleEditProduct = (product: Product) => {
+    setEditingProduct(product);
+    setShowAddModal(true);
+  };
+
+  const handleDeleteProduct = (id: string) => {
+    if (window.confirm('Вы уверены, что хотите удалить этот продукт?')) {
+      setProducts(prev => prev.filter(p => p.id !== id));
+    }
+  };
+
+  const toggleProductStatus = (id: string) => {
+    setProducts(prev => prev.map(p => 
+      p.id === id ? { ...p, status: p.status === 'active' ? 'inactive' : 'active' } : p
+    ));
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Управление продукцией
+          </h1>
+          <p className="text-gray-600">
+            Добавляйте, редактируйте и управляйте каталогом продукции
+          </p>
+        </div>
+        
+        <Button
+          onClick={() => setShowAddModal(true)}
+          className="flex items-center space-x-2"
+        >
+          <Plus className="w-5 h-5" />
+          Добавить продукт
+        </Button>
+      </div>
+
+      {/* Filters */}
+      <Card className="p-6">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Поиск по названию или описанию..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="all">Все категории</option>
+            {categories.map(category => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Card>
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProducts.map((product) => (
+          <motion.div
+            key={product.id}
+            layout
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+          >
+            <Card className="overflow-hidden h-full">
+              {/* Product Image */}
+              <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Package className="w-16 h-16 text-blue-600" />
+                </div>
+                
+                {/* Status Badge */}
+                <div className={`absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium ${
+                  product.status === 'active' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-gray-100 text-gray-800'
+                }`}>
+                  {product.status === 'active' ? 'Активен' : 'Неактивен'}
+                </div>
+              </div>
+
+              {/* Product Info */}
+              <div className="p-6">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-xl font-semibold text-gray-900">
+                    {product.name}
+                  </h3>
+                </div>
+                
+                <div className="mb-3">
+                  <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                    {product.category}
+                  </span>
+                </div>
+                
+                <p className="text-gray-600 mb-4 line-clamp-3">
+                  {product.description}
+                </p>
+                
+                <div className="space-y-2 mb-4">
+                  {product.features.slice(0, 2).map((feature, idx) => (
+                    <div key={idx} className="flex items-center space-x-2 text-sm text-gray-600">
+                      <Star className="w-4 h-4 text-yellow-400" />
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                  {product.features.length > 2 && (
+                    <div className="text-sm text-gray-500">
+                      +{product.features.length - 2} еще...
+                    </div>
+                  )}
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEditProduct(product)}
+                    className="flex-1"
+                  >
+                    <Edit className="w-4 h-4 mr-1" />
+                    Редактировать
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => toggleProductStatus(product.id)}
+                    className={`${
+                      product.status === 'active' 
+                        ? 'text-orange-600 hover:text-orange-700' 
+                        : 'text-green-600 hover:text-green-700'
+                    }`}
+                  >
+                    {product.status === 'active' ? 'Деактивировать' : 'Активировать'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDeleteProduct(product.id)}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Empty State */}
+      {filteredProducts.length === 0 && (
+        <Card className="p-12 text-center">
+          <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            Продукты не найдены
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Попробуйте изменить параметры поиска или добавьте новый продукт
+          </p>
+          <Button onClick={() => setShowAddModal(true)}>
+            <Plus className="w-5 h-5 mr-2" />
+            Добавить первый продукт
+          </Button>
+        </Card>
+      )}
+
+      {/* Add/Edit Product Modal */}
+      <Modal
+        isOpen={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditingProduct(null);
+        }}
+        title={editingProduct ? 'Редактировать продукт' : 'Добавить новый продукт'}
+        size="lg"
+      >
+        <ProductForm
+          product={editingProduct}
+          onSubmit={handleAddProduct}
+          onCancel={() => {
+            setShowAddModal(false);
+            setEditingProduct(null);
+          }}
+        />
+      </Modal>
+    </div>
+  );
+};
+
+export default ProductsManagement;
+
