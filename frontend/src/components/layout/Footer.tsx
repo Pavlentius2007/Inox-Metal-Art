@@ -173,7 +173,7 @@ const Footer: React.FC = () => {
 
               {/* Company Stats */}
               <div className="grid grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
-                {companyStats.map((stat, index) => (
+                {companyStats.map((stat) => (
                   <motion.div
                     key={stat.label}
                     variants={itemVariants}
@@ -211,8 +211,8 @@ const Footer: React.FC = () => {
               </div>
 
               {/* Social Links */}
-              <div className="flex space-x-3 lg:space-x-4 pt-2">
-                {socialLinks.map((social, index) => (
+              <div className="flex space-x-3 lg:space-y-4 pt-2">
+                {socialLinks.map((social) => (
                   <motion.a
                     key={social.label}
                     href={social.href}
@@ -232,7 +232,7 @@ const Footer: React.FC = () => {
 
             {/* Navigation Grid */}
             <motion.div className="grid grid-cols-2 gap-6 lg:gap-8" variants={itemVariants}>
-              {footerSections.map((section, index) => (
+              {footerSections.map((section) => (
                 <motion.div
                   key={section.id}
                   variants={itemVariants}

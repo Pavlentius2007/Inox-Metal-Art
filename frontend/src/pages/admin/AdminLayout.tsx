@@ -1,23 +1,24 @@
 import React, { useState } from 'react';
 import { Link, useLocation, Outlet, Routes, Route } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  LayoutDashboard, 
-  Package, 
-  Image, 
-  FolderOpen, 
-  Award, 
-  Users, 
-  Settings, 
+import {
+  LayoutDashboard,
+  Package,
+  Image,
+  FolderOpen,
+  Award,
+  Users,
+  Settings,
   BarChart3,
   FileText,
   LogOut,
   X
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
-// Добавляю импорты для вложенных страниц
 import Dashboard from './Dashboard';
 import ProductsManagement from './ProductsManagement';
+import GalleryManagement from './GalleryManagement';
+import ProjectsManagement from './ProjectsManagement';
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -113,8 +114,10 @@ const AdminLayout: React.FC = () => {
         {/* Page Content */}
         <main className="flex-1 overflow-auto p-6">
           <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/products" element={<ProductsManagement />} />
+            <Route index element={<Dashboard />} />
+            <Route path="products" element={<ProductsManagement />} />
+            <Route path="gallery" element={<GalleryManagement />} />
+            <Route path="projects" element={<ProjectsManagement />} />
             {/* Добавьте другие маршруты здесь */}
           </Routes>
         </main>

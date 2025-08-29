@@ -4,7 +4,10 @@ from fastapi.staticfiles import StaticFiles
 import os
 
 from app.core.database import engine, Base
-from app.api.v1 import applications
+from app.api.v1 import api_router
+
+# Импортируем модели для создания таблиц
+from app.models import product, gallery, project, certificate, page_content, application
 
 # Создаем таблицы при запуске
 Base.metadata.create_all(bind=engine)
@@ -15,20 +18,31 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS настройки
+# CORS настройки для разработки
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],  # Разрешаем все источники для разработки
+    allow_credentials=False,  # Отключаем credentials для "*"
+    allow_methods=["*"],  # Разрешаем все методы
+    allow_headers=["*"],  # Разрешаем все заголовки
 )
 
-# Подключаем роутеры
-app.include_router(applications.router, prefix="/api/v1")
+# Подключаем API роутеры
+app.include_router(api_router, prefix="/api/v1")
 
-# Создаем папку для загрузок
-os.makedirs("uploads/applications", exist_ok=True)
+# Создаем папки для загрузок
+upload_dirs = [
+    "uploads/products",
+    "uploads/gallery", 
+    "uploads/videos",
+    "uploads/projects",
+    "uploads/certificates",
+    "uploads/technologies",
+    "uploads/thumbnails"
+]
+
+for upload_dir in upload_dirs:
+    os.makedirs(upload_dir, exist_ok=True)
 
 # Статические файлы
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")

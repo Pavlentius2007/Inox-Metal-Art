@@ -14,18 +14,13 @@ import ApplicationForm from './components/ApplicationForm';
 
 // Admin pages
 import AdminLayout from './pages/admin/AdminLayout';
-import Dashboard from './pages/admin/Dashboard';
-import ProductsManagement from './pages/admin/ProductsManagement';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
         {/* Admin routes - без Header и Footer */}
-        <Route path="/admin/*" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="products" element={<ProductsManagement />} />
-        </Route>
+        <Route path="/admin/*" element={<AdminLayout />} />
 
         {/* Public routes - с Header и Footer */}
         <Route element={<LayoutWithHeaderFooter />}>

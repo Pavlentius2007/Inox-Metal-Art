@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -10,11 +10,13 @@ import {
   Package,
   Palette,
   Star,
-  Shield
+  Shield,
+  RefreshCw
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Card from '../../components/ui/Card';
 import Modal from '../../components/ui/Modal';
+import ProductForm from '../../components/admin/ProductForm';
 
 interface Product {
   id: string;
@@ -22,39 +24,19 @@ interface Product {
   category: string;
   description: string;
   features: string[];
-  image: string;
+  image_path: string;
   status: 'active' | 'inactive';
-  createdAt: string;
+  created_at: string;
 }
 
 const ProductsManagement: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: '1',
-      name: 'Titanium PVD покрытие',
-      category: 'Декоративные покрытия',
-      description: 'Вакуумное напыление нитридов титана на нержавеющую сталь',
-      features: ['Яркие декоративные цвета', 'Устойчивость к коррозии', '30+ лет проверенной надежности'],
-      image: '/placeholder.jpg',
-      status: 'active',
-      createdAt: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Nano Scratch Resistant (NSR™)',
-      category: 'Защитные покрытия',
-      description: 'Нанопокрытие против царапин',
-      features: ['В 4 раза тверже обычной стали', 'Идеально для лифтов и кухонь', 'Защита от царапин'],
-      image: '/placeholder.jpg',
-      status: 'active',
-      createdAt: '2024-01-10'
-    }
-  ]);
-
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string>('');
 
   const categories = [
     'Декоративные покрытия',
@@ -64,6 +46,55 @@ const ProductsManagement: React.FC = () => {
     'Текстурированные покрытия'
   ];
 
+  // Загрузка продуктов с API
+  const fetchProducts = async () => {
+    try {
+      setIsLoading(true);
+      setError('');
+      
+      const response = await fetch('http://localhost:8000/api/v1/products/');
+      if (!response.ok) {
+        throw new Error('Ошибка при загрузке продуктов');
+      }
+      
+      const data = await response.json();
+      setProducts(data.products || []);
+    } catch (err) {
+      console.error('Ошибка загрузки продуктов:', err);
+      setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
+      
+      // Загружаем тестовые данные при ошибке API
+      setProducts([
+        {
+          id: '1',
+          name: 'Titanium PVD покрытие',
+          category: 'Декоративные покрытия',
+          description: 'Вакуумное напыление нитридов титана на нержавеющую сталь',
+          features: ['Яркие декоративные цвета', 'Устойчивость к коррозии', '30+ лет проверенной надежности'],
+          image_path: '/placeholder.jpg',
+          status: 'active',
+          created_at: '2024-01-15'
+        },
+        {
+          id: '2',
+          name: 'Nano Scratch Resistant (NSR™)',
+          category: 'Защитные покрытия',
+          description: 'Нанопокрытие против царапин',
+          features: ['В 4 раза тверже обычной стали', 'Идеально для лифтов и кухонь', 'Защита от царапин'],
+          image_path: '/placeholder.jpg',
+          status: 'active',
+          created_at: '2024-01-10'
+        }
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          product.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -71,20 +102,50 @@ const ProductsManagement: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const handleAddProduct = (productData: Partial<Product>) => {
-    const newProduct: Product = {
-      id: Date.now().toString(),
-      name: productData.name || '',
-      category: productData.category || categories[0],
-      description: productData.description || '',
-      features: productData.features || [],
-      image: productData.image || '/placeholder.jpg',
-      status: 'active',
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    
-    setProducts(prev => [...prev, newProduct]);
-    setShowAddModal(false);
+  const handleAddProduct = async (productData: Partial<Product>) => {
+    try {
+      if (editingProduct) {
+        // Обновление существующего продукта
+        const response = await fetch(`http://localhost:8000/api/v1/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Ошибка при обновлении продукта');
+        }
+
+        const updatedProduct = await response.json();
+        setProducts(prev => prev.map(p => 
+          p.id === editingProduct.id ? updatedProduct : p
+        ));
+      } else {
+        // Создание нового продукта
+        const response = await fetch('http://localhost:8000/api/v1/products/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
+        });
+
+        if (!response.ok) {
+          throw new Error('Ошибка при создании продукта');
+        }
+
+        const newProduct = await response.json();
+        setProducts(prev => [...prev, newProduct]);
+      }
+
+      setShowAddModal(false);
+      setEditingProduct(null);
+    } catch (err) {
+      console.error('Ошибка при сохранении продукта:', err);
+      alert(err instanceof Error ? err.message : 'Неизвестная ошибка');
+    }
   };
 
   const handleEditProduct = (product: Product) => {
@@ -92,17 +153,65 @@ const ProductsManagement: React.FC = () => {
     setShowAddModal(true);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    if (window.confirm('Вы уверены, что хотите удалить этот продукт?')) {
+  const handleDeleteProduct = async (id: string) => {
+    if (!window.confirm('Вы уверены, что хотите удалить этот продукт?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/products/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при удалении продукта');
+      }
+
       setProducts(prev => prev.filter(p => p.id !== id));
+    } catch (err) {
+      console.error('Ошибка при удалении продукта:', err);
+      alert(err instanceof Error ? err.message : 'Неизвестная ошибка');
     }
   };
 
-  const toggleProductStatus = (id: string) => {
-    setProducts(prev => prev.map(p => 
-      p.id === id ? { ...p, status: p.status === 'active' ? 'inactive' : 'active' } : p
-    ));
+  const toggleProductStatus = async (id: string) => {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const newStatus = product.status === 'active' ? 'inactive' : 'active';
+
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Ошибка при обновлении статуса');
+      }
+
+      setProducts(prev => prev.map(p => 
+        p.id === id ? { ...p, status: newStatus } : p
+      ));
+    } catch (err) {
+      console.error('Ошибка при обновлении статуса:', err);
+      alert(err instanceof Error ? err.message : 'Неизвестная ошибка');
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-gray-600">Загрузка продуктов...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -117,14 +226,32 @@ const ProductsManagement: React.FC = () => {
           </p>
         </div>
         
-        <Button
-          onClick={() => setShowAddModal(true)}
-          className="flex items-center space-x-2"
-        >
-          <Plus className="w-5 h-5" />
-          Добавить продукт
-        </Button>
+        <div className="flex space-x-3">
+          <Button
+            variant="outline"
+            onClick={fetchProducts}
+            className="flex items-center space-x-2"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Обновить
+          </Button>
+          
+          <Button
+            onClick={() => setShowAddModal(true)}
+            className="flex items-center space-x-2"
+          >
+            <Plus className="w-5 h-5" />
+            Добавить продукт
+          </Button>
+        </div>
       </div>
+
+      {/* Ошибки */}
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-sm text-red-600">{error}</p>
+        </div>
+      )}
 
       {/* Filters */}
       <Card className="p-6">
@@ -289,6 +416,7 @@ const ProductsManagement: React.FC = () => {
             setShowAddModal(false);
             setEditingProduct(null);
           }}
+          categories={categories}
         />
       </Modal>
     </div>
