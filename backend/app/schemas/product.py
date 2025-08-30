@@ -2,8 +2,35 @@
 # -*- coding: utf-8 -*-
 
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from datetime import datetime
+
+class Specifications(BaseModel):
+    """Технические характеристики продукта"""
+    type: Optional[str] = None
+    thickness: Optional[str] = None
+    hardness: Optional[str] = None
+    colors: Optional[List[str]] = []
+    scratch_resistance: Optional[str] = None
+    effect: Optional[str] = None
+    maintenance: Optional[str] = None
+    eco: Optional[str] = None
+    roughness: Optional[str] = None
+    quality: Optional[str] = None
+    reflection: Optional[str] = None
+    texture: Optional[str] = None
+
+class Detailed(BaseModel):
+    """Детальная информация о продукте"""
+    technology: Optional[str] = None
+    types: Optional[List[str]] = []
+    colors: Optional[List[str]] = []
+    testing: Optional[str] = None
+    quality: Optional[str] = None
+    experience: Optional[str] = None
+    benefits: Optional[List[str]] = []
+    applications: Optional[List[str]] = []
+    features: Optional[List[str]] = []
 
 class ProductBase(BaseModel):
     """Базовая схема продукта"""
@@ -11,7 +38,11 @@ class ProductBase(BaseModel):
     category: str = Field(..., min_length=1, max_length=100)
     description: Optional[str] = None
     features: Optional[List[str]] = []
-    image_path: Optional[str] = None
+    image_path: Optional[str] = None  # Основное изображение
+    images: Optional[List[str]] = []  # Дополнительные изображения
+    specifications: Optional[Specifications] = None
+    detailed: Optional[Detailed] = None
+    price: Optional[float] = None
     status: str = Field(default="active", pattern="^(active|inactive)$")
 
 class ProductCreate(ProductBase):
@@ -24,6 +55,10 @@ class ProductUpdate(BaseModel):
     description: Optional[str] = None
     features: Optional[List[str]] = None
     image_path: Optional[str] = None
+    images: Optional[List[str]] = None
+    specifications: Optional[Specifications] = None
+    detailed: Optional[Detailed] = None
+    price: Optional[float] = None
     status: Optional[str] = Field(None, pattern="^(active|inactive)$")
 
 class Product(ProductBase):

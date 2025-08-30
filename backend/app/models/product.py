@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, Text, DateTime, Boolean, Float
 from sqlalchemy.sql import func
 from sqlalchemy.types import TypeDecorator, JSON
 import json
@@ -10,7 +10,7 @@ class JSONString(TypeDecorator):
     
     def process_bind_param(self, value, dialect):
         if value is not None:
-            if isinstance(value, list):
+            if isinstance(value, (list, dict)):
                 return json.dumps(value, ensure_ascii=False)
             return value
         return None
@@ -20,8 +20,8 @@ class JSONString(TypeDecorator):
             try:
                 return json.loads(value)
             except (json.JSONDecodeError, TypeError):
-                return []
-        return []
+                return {} if isinstance(value, str) and value.startswith('{') else []
+        return {} if isinstance(value, str) and value.startswith('{') else []
 
 class Product(Base):
     __tablename__ = "products"
@@ -31,7 +31,11 @@ class Product(Base):
     category = Column(String(100), nullable=False, index=True)
     description = Column(Text, nullable=True)
     features = Column(JSONString, nullable=True)  # Используем наш кастомный тип
-    image_path = Column(String(500), nullable=True)
+    image_path = Column(String(500), nullable=True)  # Основное изображение
+    images = Column(JSONString, nullable=True)  # Массив путей к дополнительным изображениям
+    specifications = Column(JSONString, nullable=True)  # Технические характеристики
+    detailed = Column(JSONString, nullable=True)  # Детальная информация
+    price = Column(Float, nullable=True)  # Цена
     status = Column(String(20), default="active", index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
