@@ -9,6 +9,8 @@ from datetime import datetime
 from app.core.database import get_db
 from app.models.gallery import Gallery as GalleryModel
 from app.schemas.gallery import GalleryCreate, GalleryUpdate, Gallery, GalleryList, GalleryCategory
+from app.api.v1.auth import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
@@ -72,7 +74,8 @@ async def create_gallery(
     status: str = Form("active"),
     sort_order: int = Form(0),
     image: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Создать новый элемент галереи"""
     
@@ -121,7 +124,8 @@ async def create_gallery(
 async def update_gallery(
     gallery_id: int,
     gallery_update: GalleryUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Обновить элемент галереи"""
     gallery = db.query(GalleryModel).filter(GalleryModel.id == gallery_id).first()
@@ -139,7 +143,11 @@ async def update_gallery(
     return gallery
 
 @router.delete("/{gallery_id}")
-async def delete_gallery(gallery_id: int, db: Session = Depends(get_db)):
+async def delete_gallery(
+    gallery_id: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """Удалить элемент галереи"""
     gallery = db.query(GalleryModel).filter(GalleryModel.id == gallery_id).first()
     if not gallery:
@@ -158,7 +166,8 @@ async def delete_gallery(gallery_id: int, db: Session = Depends(get_db)):
 async def upload_gallery_image(
     gallery_id: int,
     image: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Загрузить изображение для элемента галереи"""
     gallery = db.query(GalleryModel).filter(GalleryModel.id == gallery_id).first()

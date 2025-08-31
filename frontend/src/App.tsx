@@ -6,7 +6,7 @@ import Home from './pages/Home';
 import About from './pages/About';
 import Products from './pages/Products';
 import Gallery from './pages/Gallery';
-import Technologies from './pages/Technologies';
+import Materials from './pages/Materials';
 import Projects from './pages/Projects';
 import Certificates from './pages/Certificates';
 import Contacts from './pages/Contacts';
@@ -14,13 +14,25 @@ import ApplicationForm from './components/ApplicationForm';
 
 // Admin pages
 import AdminLayout from './pages/admin/AdminLayout';
+import LoginPage from './pages/admin/LoginPage';
+import PrivateRoute from './components/auth/PrivateRoute';
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        {/* Admin routes - без Header и Footer */}
-        <Route path="/admin/*" element={<AdminLayout />} />
+        {/* Auth routes */}
+        <Route path="/admin/login" element={<LoginPage />} />
+        
+        {/* Protected Admin routes */}
+        <Route 
+          path="/admin/*" 
+          element={
+            <PrivateRoute>
+              <AdminLayout />
+            </PrivateRoute>
+          } 
+        />
 
         {/* Public routes - с Header и Footer */}
         <Route element={<LayoutWithHeaderFooter />}>
@@ -28,7 +40,7 @@ const App: React.FC = () => {
           <Route path="/about" element={<About />} />
           <Route path="/products" element={<Products />} />
           <Route path="/gallery" element={<Gallery />} />
-          <Route path="/technologies" element={<Technologies />} />
+          <Route path="/materials" element={<Materials />} />
           <Route path="/projects" element={<Projects />} />
           <Route path="/certificates" element={<Certificates />} />
           <Route path="/contacts" element={<Contacts />} />

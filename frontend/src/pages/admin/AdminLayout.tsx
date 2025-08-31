@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useLocation, Outlet, Routes, Route } from 'react-router-dom';
+import { Link, useLocation, Outlet, Routes, Route, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -12,21 +12,39 @@ import {
   BarChart3,
   FileText,
   LogOut,
-  X
+  X,
+  Download,
+  User
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
+import { useAuth } from '../../hooks/useAuth';
 import Dashboard from './Dashboard';
 import ProductsManagement from './ProductsManagement';
+import ImportProducts from './ImportProducts';
+import ImportProjects from './ImportProjects';
+import MaterialsManagement from './MaterialsManagement';
+import ImportMaterials from './ImportMaterials';
 import GalleryManagement from './GalleryManagement';
 import ProjectsManagement from './ProjectsManagement';
 
 const AdminLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/admin/login');
+  };
 
   const menuItems = [
     { path: '/admin', label: 'Дашборд', icon: LayoutDashboard },
     { path: '/admin/products', label: 'Продукция', icon: Package },
+    { path: '/admin/import', label: 'Импорт продуктов', icon: Download },
+    { path: '/admin/import-projects', label: 'Импорт проектов', icon: Download },
+    { path: '/admin/materials', label: 'Материалы', icon: FileText },
+    { path: '/admin/import-materials', label: 'Импорт материалов', icon: Download },
     { path: '/admin/gallery', label: 'Галерея', icon: Image },
     { path: '/admin/projects', label: 'Проекты', icon: FolderOpen },
     { path: '/admin/certificates', label: 'Сертификаты', icon: Award },
@@ -75,8 +93,27 @@ const AdminLayout: React.FC = () => {
           </button>
         </div>
 
+        {/* User Info */}
+        {user && (
+          <div className="px-6 py-4 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4 text-blue-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  {user.name || user.email}
+                </p>
+                <p className="text-xs text-gray-500 truncate">
+                  {user.email}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Navigation */}
-        <nav className="px-4 py-6 space-y-2">
+        <nav className="px-4 py-6 space-y-2 flex-1">
           {menuItems.map((item) => (
             <Link
               key={item.path}
@@ -100,7 +137,7 @@ const AdminLayout: React.FC = () => {
             variant="outline"
             size="sm"
             fullWidth
-            onClick={() => {/* Выход из админки */}}
+            onClick={handleLogout}
             className="text-red-600 hover:text-red-700"
           >
             <LogOut className="w-4 h-4 mr-2" />
@@ -116,6 +153,10 @@ const AdminLayout: React.FC = () => {
           <Routes>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<ProductsManagement />} />
+            <Route path="import" element={<ImportProducts />} />
+            <Route path="import-projects" element={<ImportProjects />} />
+            <Route path="materials" element={<MaterialsManagement />} />
+            <Route path="import-materials" element={<ImportMaterials />} />
             <Route path="gallery" element={<GalleryManagement />} />
             <Route path="projects" element={<ProjectsManagement />} />
             {/* Добавьте другие маршруты здесь */}

@@ -5,16 +5,7 @@ import { Menu, X } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   // Закрытие мобильного меню при изменении маршрута
   useEffect(() => {
@@ -26,7 +17,7 @@ const Header: React.FC = () => {
     { path: '/about', label: 'О компании' },
     { path: '/products', label: 'Продукция' },
     { path: '/gallery', label: 'Галерея' },
-    { path: '/technologies', label: 'Технологии' },
+    { path: '/materials', label: 'Материалы' },
     { path: '/projects', label: 'Проекты' },
     { path: '/certificates', label: 'Сертификаты' },
     { path: '/contacts', label: 'Контакты' }
@@ -34,24 +25,14 @@ const Header: React.FC = () => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Динамические классы для адаптивного цвета
-  const headerClasses = isScrolled 
-    ? {
-        // При прокрутке - белый фон, темный текст
-        textMain: 'text-gray-900',
-        textSecondary: 'text-gray-700',
-        textHover: 'hover:text-blue-700',
-        activeText: 'text-blue-700',
-        bg: 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100'
-      }
-    : {
-        // Вверху страницы - прозрачный фон, белый текст
-        textMain: 'text-white',
-        textSecondary: 'text-gray-200',
-        textHover: 'hover:text-blue-200',
-        activeText: 'text-blue-200',
-        bg: 'bg-transparent'
-      };
+  // Фиксированные классы - всегда белый фон с темным текстом
+  const headerClasses = {
+    textMain: 'text-gray-900',
+    textSecondary: 'text-gray-700',
+    textHover: 'hover:text-blue-700',
+    activeText: 'text-blue-700',
+    bg: 'bg-white/95 backdrop-blur-md shadow-lg border-b border-gray-100'
+  };
 
   // Анимации для мобильного меню
   const menuVariants = {

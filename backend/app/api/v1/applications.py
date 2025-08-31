@@ -9,6 +9,8 @@ from app.core.database import get_db
 from app.models.application import Application, ProductType
 from app.core.config import settings
 from app.services.email_service import send_application_email
+from app.api.v1.auth import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
@@ -75,7 +77,8 @@ async def create_application(
 def get_applications(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Получение списка заявок (для внутреннего использования)"""
     applications = db.query(Application).offset(skip).limit(limit).all()

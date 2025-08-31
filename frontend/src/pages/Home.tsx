@@ -49,27 +49,8 @@ const Home: React.FC = () => {
     { number: '15+', label: 'Стран поставок' }
   ];
 
-  // Реальные продукты из оригинального сайта
-  const products = [
-    {
-      name: 'Titanium PVD покрытие',
-      description: 'Вакуумное напыление нитридов титана на нержавеющую сталь',
-      image: '/images/products/titanium-pvd.jpg',
-      features: ['Яркие декоративные цвета', 'Устойчивость к коррозии', '30+ лет проверенной надежности']
-    },
-    {
-      name: 'Nano Scratch Resistant (NSR™)',
-      description: 'Нанопокрытие против царапин',
-      image: '/images/products/nsr.jpg',
-      features: ['В 4 раза тверже обычной стали', 'Идеально для лифтов и кухонь', 'Защита от царапин']
-    },
-    {
-      name: 'Nano Anti-Fingerprint (NAS™)',
-      description: 'Антиотпечатковое покрытие',
-      image: '/images/products/nas.jpg',
-      features: ['Снижает расходы на обслуживание', 'Защищает от бактерий', 'Экологически чистый продукт']
-    }
-  ];
+  // Продукты будут загружаться с API
+  const products: any[] = [];
 
   // Реальные проекты из оригинального сайта
   const projects = [

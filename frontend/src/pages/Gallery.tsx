@@ -70,7 +70,7 @@ const Gallery: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white pt-32">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -83,7 +83,7 @@ const Gallery: React.FC = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white pt-32">
         <div className="container mx-auto px-4 py-16">
           <div className="text-center">
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md max-w-md mx-auto">
@@ -97,7 +97,7 @@ const Gallery: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white pt-32">
       {/* Header Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="container mx-auto px-4 py-16">

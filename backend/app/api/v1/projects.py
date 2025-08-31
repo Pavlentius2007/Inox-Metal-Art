@@ -9,6 +9,8 @@ from datetime import datetime
 from app.core.database import get_db
 from app.models.project import Project as ProjectModel
 from app.schemas.project import ProjectCreate, ProjectUpdate, Project, ProjectList, ProjectCategory
+from app.api.v1.auth import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
@@ -84,7 +86,8 @@ async def create_project(
     is_featured: bool = Form(False),
     main_image: Optional[UploadFile] = File(None),
     gallery_images: Optional[List[UploadFile]] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Создать новый проект"""
     
@@ -160,7 +163,8 @@ async def create_project(
 async def update_project(
     project_id: int,
     project_update: ProjectUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Обновить проект"""
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
@@ -178,7 +182,11 @@ async def update_project(
     return project
 
 @router.delete("/{project_id}")
-async def delete_project(project_id: int, db: Session = Depends(get_db)):
+async def delete_project(
+    project_id: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """Удалить проект"""
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
     if not project:
@@ -202,7 +210,8 @@ async def delete_project(project_id: int, db: Session = Depends(get_db)):
 async def upload_project_main_image(
     project_id: int,
     image: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Загрузить главное изображение для проекта"""
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()
@@ -231,7 +240,8 @@ async def upload_project_main_image(
 async def upload_project_gallery_images(
     project_id: int,
     images: List[UploadFile] = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Загрузить изображения галереи для проекта"""
     project = db.query(ProjectModel).filter(ProjectModel.id == project_id).first()

@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
       title: 'Услуги',
       icon: Wrench,
       links: [
-        { label: 'Технологии', path: '/technologies' },
+        { label: 'Материалы', path: '/materials' },
         { label: 'Проекты', path: '/projects' },
         { label: 'Галерея работ', path: '/gallery' }
       ]

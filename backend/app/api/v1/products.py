@@ -9,6 +9,8 @@ from app.core.database import get_db
 from app.models.product import Product
 from app.schemas.product import ProductCreate, ProductUpdate, Product as ProductSchema, ProductList
 from app.core.config import settings
+from app.api.v1.auth import get_current_user
+from app.models.user import User
 
 router = APIRouter()
 
@@ -56,7 +58,8 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 @router.post("/", response_model=ProductSchema, status_code=status.HTTP_201_CREATED)
 def create_product(
     product: ProductCreate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Создать новый продукт"""
     # Преобразуем features в JSON строку
@@ -88,7 +91,8 @@ def create_product(
 def update_product(
     product_id: int,
     product_update: ProductUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     """Обновить продукт"""
     db_product = db.query(Product).filter(Product.id == product_id).first()
@@ -120,7 +124,11 @@ def update_product(
     return db_product
 
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_product(product_id: int, db: Session = Depends(get_db)):
+def delete_product(
+    product_id: int, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
     """Удалить продукт"""
     db_product = db.query(Product).filter(Product.id == product_id).first()
     if not db_product:
@@ -152,7 +160,10 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
     db.commit()
 
 @router.post("/upload-image")
-async def upload_product_image(file: UploadFile = File(...)):
+async def upload_product_image(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user)
+):
     """Загрузить изображение для продукта"""
     # Проверяем тип файла
     if not file.content_type.startswith('image/'):
@@ -187,7 +198,10 @@ async def upload_product_image(file: UploadFile = File(...)):
     return {"file_path": file_path, "filename": filename, "url": f"/uploads/products/{filename}"}
 
 @router.post("/upload-multiple-images")
-async def upload_multiple_product_images(files: List[UploadFile] = File(...)):
+async def upload_multiple_product_images(
+    files: List[UploadFile] = File(...),
+    current_user: User = Depends(get_current_user)
+):
     """Загрузить несколько изображений для продукта"""
     uploaded_files = []
     

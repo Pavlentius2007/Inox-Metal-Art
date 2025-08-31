@@ -62,30 +62,7 @@ const ProductsManagement: React.FC = () => {
     } catch (err) {
       console.error('Ошибка загрузки продуктов:', err);
       setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
-      
-      // Загружаем тестовые данные при ошибке API
-      setProducts([
-        {
-          id: '1',
-          name: 'Titanium PVD покрытие',
-          category: 'Декоративные покрытия',
-          description: 'Вакуумное напыление нитридов титана на нержавеющую сталь',
-          features: ['Яркие декоративные цвета', 'Устойчивость к коррозии', '30+ лет проверенной надежности'],
-          image_path: '/placeholder.jpg',
-          status: 'active',
-          created_at: '2024-01-15'
-        },
-        {
-          id: '2',
-          name: 'Nano Scratch Resistant (NSR™)',
-          category: 'Защитные покрытия',
-          description: 'Нанопокрытие против царапин',
-          features: ['В 4 раза тверже обычной стали', 'Идеально для лифтов и кухонь', 'Защита от царапин'],
-          image_path: '/placeholder.jpg',
-          status: 'active',
-          created_at: '2024-01-10'
-        }
-      ]);
+      setProducts([]); // Пустой массив вместо моковых данных
     } finally {
       setIsLoading(false);
     }

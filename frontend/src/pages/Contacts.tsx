@@ -81,7 +81,7 @@ const Contacts: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white pt-32">
       {/* Hero Section */}
       <section className="relative py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900 overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
