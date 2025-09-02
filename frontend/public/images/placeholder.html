@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Демо - Фоновое изображение для страницы материалов</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .hero-section {
+            position: relative;
+            min-height: 60vh;
+            background-image: url('https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=1920&h=1080&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .content {
+            position: relative;
+            z-index: 10;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        p {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .instructions {
+            background: white;
+            color: #333;
+            padding: 2rem;
+            text-align: left;
+        }
+        
+        .instructions h2 {
+            color: #1e40af;
+        }
+        
+        .instructions ul {
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="overlay"></div>
+        <div class="content">
+            <h1>Материалы</h1>
+            <p>Полезные материалы и документация для скачивания</p>
+            <p>Каталоги, технические характеристики, сертификаты и руководства</p>
+        </div>
+    </div>
+    
+    <div class="instructions">
+        <h2>Как добавить свое изображение:</h2>
+        <ol>
+            <li>Создайте или найдите фотографию, связанную с металлообработкой/нержавеющей сталью</li>
+            <li>Рекомендуемый размер: 1920x1080px или больше</li>
+            <li>Сохраните как JPG или PNG</li>
+            <li>Назовите файл: <strong>materials-hero-bg.jpg</strong></li>
+            <li>Поместите в папку: <strong>frontend/public/images/</strong></li>
+            <li>Перезапустите фронтенд</li>
+        </ol>
+        
+        <h3>Примеры подходящих изображений:</h3>
+        <ul>
+            <li>Металлические детали и заготовки</li>
+            <li>Промышленное оборудование</li>
+            <li>Цех металлообработки</li>
+            <li>Готовые изделия из нержавеющей стали</li>
+            <li>Технологические процессы</li>
+        </ul>
+        
+        <p><strong>Важно:</strong> Изображение должно иметь хороший контраст, чтобы белый текст был читаемым.</p>
+    </div>
+</body>
+</html>
+

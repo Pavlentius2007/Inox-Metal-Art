@@ -7,13 +7,7 @@ import {
   MapPin, 
   MessageCircle,
   Send, 
-  ArrowRight,
-  Building2,
-  Award,
-  FileText,
-  Palette,
-  Wrench,
-  Star
+  ArrowRight
 } from 'lucide-react';
 import Button from '../ui/Button';
 
@@ -31,48 +25,7 @@ const Footer: React.FC = () => {
     }
   };
 
-  const footerSections = [
-    {
-      id: 'company',
-      title: 'Компания',
-      icon: Building2,
-      links: [
-        { label: 'О нас', path: '/about' },
-        { label: 'Контакты', path: '/contacts' },
-        { label: 'Наша команда', path: '/about' }
-      ]
-    },
-    {
-      id: 'products',
-      title: 'Продукция',
-      icon: Palette,
-      links: [
-        { label: 'Каталог продукции', path: '/products' },
-        { label: 'ПВД покрытия', path: '/products' },
-        { label: 'Художественные отделки', path: '/products' }
-      ]
-    },
-    {
-      id: 'services',
-      title: 'Услуги',
-      icon: Wrench,
-      links: [
-        { label: 'Материалы', path: '/materials' },
-        { label: 'Проекты', path: '/projects' },
-        { label: 'Галерея работ', path: '/gallery' }
-      ]
-    },
-    {
-      id: 'resources',
-      title: 'Документы',
-      icon: FileText,
-      links: [
-        { label: 'Сертификаты', path: '/certificates' },
-        { label: 'Техническая документация', path: '/certificates' },
-        { label: 'Качество продукции', path: '/certificates' }
-      ]
-    }
-  ];
+
 
   const contactInfo = {
     email: 'pavel@inoxmetalart.com',
@@ -83,11 +36,7 @@ const Footer: React.FC = () => {
     workingHours: 'Пн-Пт: 9:00-18:00 (МСК)'
   };
 
-  const companyStats = [
-    { label: '30+ лет', value: 'опыта', icon: Star },
-    { label: '500+', value: 'проектов', icon: Award },
-    { label: '25+', value: 'стран', icon: Building2 }
-  ];
+
 
   const socialLinks = [
     { 
@@ -171,47 +120,12 @@ const Footer: React.FC = () => {
                 и художественных отделках.
               </p>
 
-              {/* Company Stats */}
-              <div className="grid grid-cols-3 gap-4 lg:gap-6 mb-6 lg:mb-8">
-                {companyStats.map((stat) => (
-                  <motion.div
-                    key={stat.label}
-                    variants={itemVariants}
-                    className="text-center p-3 lg:p-4 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200"
-                  >
-                    <stat.icon className="w-5 h-5 lg:w-6 lg:h-6 text-blue-600 mx-auto mb-2" />
-                    <div className="text-lg lg:text-xl font-bold text-gray-900 mb-1">
-                      {stat.label}
-                    </div>
-                    <div className="text-xs lg:text-sm text-gray-600 font-medium">
-                      {stat.value}
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
 
-              {/* Contact Info */}
-              <div className="space-y-3 lg:space-y-4">
-                <div className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                  <Phone className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <a href={`tel:${contactInfo.phone}`} className="text-sm lg:text-base font-medium">
-                    {contactInfo.phone}
-                  </a>
-                </div>
-                <div className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 transition-colors duration-200">
-                  <Mail className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <a href={`mailto:${contactInfo.email}`} className="text-sm lg:text-base font-medium">
-                    {contactInfo.email}
-                  </a>
-                </div>
-                <div className="flex items-center space-x-3 text-gray-700">
-                  <MapPin className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                  <span className="text-sm lg:text-base font-medium">{contactInfo.address}</span>
-                </div>
-              </div>
+
+
 
               {/* Social Links */}
-              <div className="flex space-x-3 lg:space-y-4 pt-2">
+              <div className="flex items-center space-x-3 pt-4">
                 {socialLinks.map((social) => (
                   <motion.a
                     key={social.label}
@@ -221,7 +135,7 @@ const Footer: React.FC = () => {
                     variants={itemVariants}
                     whileHover={{ scale: 1.1, y: -2 }}
                     whileTap={{ scale: 0.95 }}
-                    className="w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl"
+                    className="w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center transition-all duration-200 shadow-lg hover:shadow-xl flex-shrink-0"
                     aria-label={social.label}
                   >
                     <social.icon className="w-5 h-5" />
@@ -230,39 +144,70 @@ const Footer: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* Navigation Grid */}
-            <motion.div className="grid grid-cols-2 gap-6 lg:gap-8" variants={itemVariants}>
-              {footerSections.map((section) => (
-                <motion.div
-                  key={section.id}
-                  variants={itemVariants}
-                  className="space-y-3 lg:space-y-4"
-                >
-                  {/* Section Header */}
-                  <div className="flex items-center space-x-2 mb-3 lg:mb-4">
-                    <section.icon className="w-5 h-5 text-blue-600" />
-                    <h4 className="text-lg font-semibold text-gray-900">
-                      {section.title}
-                    </h4>
-                  </div>
+            {/* Two Column Layout */}
+            <div className="grid grid-cols-2 gap-8 lg:gap-12">
+              {/* Navigation Column */}
+              <motion.div className="space-y-6" variants={itemVariants}>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Навигация</h4>
+                <ul className="space-y-3">
+                  <li>
+                    <Link
+                      to="/about"
+                      className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
+                    >
+                      <span>О компании</span>
+                      <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/products"
+                      className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
+                    >
+                      <span>Каталог продукции</span>
+                      <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/materials"
+                      className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
+                    >
+                      <span>Материалы</span>
+                      <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/projects"
+                      className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
+                    >
+                      <span>Проекты</span>
+                      <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </Link>
+                  </li>
+                </ul>
+              </motion.div>
 
-                  {/* Links */}
-                  <ul className="space-y-2 lg:space-y-3">
-                    {section.links.map((link, linkIndex) => (
-                      <li key={`${section.id}-${linkIndex}`}>
-                        <Link
-                          to={link.path}
-                          className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-sm lg:text-base flex items-center group font-medium"
-                        >
-                          <span>{link.label}</span>
-                          <ArrowRight className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </motion.div>
+              {/* Contacts Column */}
+              <motion.div className="space-y-6" variants={itemVariants}>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Контакты</h4>
+                <div className="space-y-4">
+                  <div className="flex items-center space-x-3">
+                    <Phone className="w-4 h-4 text-blue-600" />
+                    <span className="text-gray-700 font-medium">+7 953 862 8581</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Mail className="w-4 h-4 text-blue-600" />
+                    <span className="text-gray-700 font-medium">pavel@inoxmetalart.com</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <MapPin className="w-4 h-4 text-blue-600" />
+                    <span className="text-gray-700 font-medium">Россия, г. Москва</span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
           <motion.div
             variants={itemVariants}
@@ -313,25 +258,22 @@ const Footer: React.FC = () => {
               {/* Quick Links */}
               <div className="flex items-center space-x-4 lg:space-x-6">
                 <Link 
-                  to="/certificates" 
-                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 flex items-center space-x-1 font-medium"
+                  to="/materials" 
+                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
                 >
-                  <Award className="w-4 h-4" />
-                  <span>Сертификаты</span>
+                  Материалы
                 </Link>
                 <Link 
-                  to="/technologies" 
-                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 flex items-center space-x-1 font-medium"
+                  to="/projects" 
+                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
                 >
-                  <Wrench className="w-4 h-4" />
-                  <span>Технологии</span>
+                  Проекты
                 </Link>
                 <Link 
                   to="/contacts" 
-                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 flex items-center space-x-1 font-medium"
+                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
                 >
-                  <Phone className="w-4 h-4" />
-                  <span>Контакты</span>
+                  Контакты
                 </Link>
               </div>
 

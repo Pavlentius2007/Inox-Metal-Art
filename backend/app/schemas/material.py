@@ -49,3 +49,4 @@ class MaterialCategory(BaseModel):
     count: int
 
 
+

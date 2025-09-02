@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { 
@@ -15,8 +15,79 @@ import {
   Palette
 } from 'lucide-react';
 import Button from '../components/ui/Button';
+import { useApplicationModal } from '../App';
+import '../styles/home.css';
 
 const Home: React.FC = () => {
+  // Состояние для модального окна заявки
+  const { isApplicationModalOpen, setIsApplicationModalOpen } = useApplicationModal();
+  
+  // Функция для открытия модального окна
+  const openApplicationModal = () => {
+    setIsApplicationModalOpen(true);
+  };
+
+  // Проверка поддержки видео
+  useEffect(() => {
+    const video = document.createElement('video');
+    const canPlayMP4 = video.canPlayType('video/mp4');
+    
+    if (canPlayMP4 === 'probably' || canPlayMP4 === 'maybe') {
+      document.querySelector('.home-hero')?.classList.add('video-supported');
+    } else {
+      document.querySelector('.home-hero')?.classList.remove('video-supported');
+    }
+  }, []);
+
+  // Функция скачивания каталога
+  const handleDownloadCatalog = async () => {
+    try {
+      // Показываем индикатор загрузки
+      const button = document.querySelector('[data-catalog-download]');
+      if (button) {
+        button.innerHTML = '<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>Скачивание...';
+        button.setAttribute('disabled', 'true');
+      }
+
+      // Скачиваем каталог
+      const response = await fetch('http://localhost:8000/uploads/materials/ИноксМеталАрт - Декоративная Нержавейка.pdf');
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'ИноксМеталАрт - Декоративная Нержавейка.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        // Показываем уведомление об успехе
+        if (button) {
+          button.innerHTML = '<CheckCircle className="w-5 h-5 mr-2" />Скачано!';
+          setTimeout(() => {
+            if (button) {
+              button.innerHTML = '<Download className="w-5 h-5 mr-2" />Скачать каталог';
+              button.removeAttribute('disabled');
+            }
+          }, 2000);
+        }
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Ошибка скачивания каталога:', error);
+      alert('Ошибка при скачивании каталога');
+      
+      // Восстанавливаем кнопку
+      const button = document.querySelector('[data-catalog-download]');
+      if (button) {
+        button.innerHTML = '<Download className="w-5 h-5 mr-2" />Скачать каталог';
+        button.removeAttribute('disabled');
+      }
+    }
+  };
+
   // Реальные преимущества из оригинального сайта InoxMetalArt
   const features = [
     {
@@ -99,18 +170,25 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900 overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-black/30"></div>
-          <div className="absolute top-0 left-0 w-full h-full">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-          </div>
-        </div>
+      <section className="relative h-screen overflow-hidden home-hero">
+        {/* Видео фон */}
+        <video 
+          className="home-hero-video"
+          autoPlay 
+          muted 
+          loop 
+          playsInline
+          poster="/images/home-hero-poster.jpg"
+        >
+          <source src="/videos/home-hero-bg.mp4" type="video/mp4" />
+          Ваш браузер не поддерживает видео.
+        </video>
+        
+        {/* Затемнение поверх видео */}
+        <div className="home-hero-overlay"></div>
 
         {/* Content */}
-        <div className="relative z-10 flex items-center justify-center h-full">
+        <div className="relative z-10 flex items-center justify-center h-full home-hero-content">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
@@ -142,21 +220,29 @@ const Home: React.FC = () => {
                 Основана в 1991 году в Таиланде для производства устойчивых художественных отделок на листах нержавеющей стали. 
                 Мы сочетаем японские технологии, сырье Nisshin и низкие производственные издержки в Таиланде.
               </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.6 }}
+              <div
                 className="flex flex-col sm:flex-row gap-4 justify-center items-center"
               >
-                <Button variant="secondary" size="lg" className="text-lg px-8 py-4">
+                <button
+                  className="bg-gray-700 hover:bg-gray-800 text-white text-lg px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl relative z-20"
+                  onClick={openApplicationModal}
+                >
                   Оставить заявку
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-                <Button variant="outline" size="lg" className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-900">
+                  <ArrowRight className="w-5 h-5 ml-2 inline" />
+                </button>
+                
+
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-900"
+                  onClick={handleDownloadCatalog}
+                  data-catalog-download
+                >
                   <Download className="w-5 h-5 mr-2" />
                   Скачать каталог
                 </Button>
-              </motion.div>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -466,6 +552,8 @@ const Home: React.FC = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Application Modal */}
     </div>
   );
 };

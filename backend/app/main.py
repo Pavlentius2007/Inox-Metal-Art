@@ -7,7 +7,7 @@ from app.core.database import engine, Base
 from app.api.v1 import api_router
 
 # Импортируем модели для создания таблиц
-from app.models import product, gallery, project, certificate, page_content, application, material, user
+from app.models import product, project, certificate, page_content, application, material, user
 
 # Создаем таблицы при запуске
 Base.metadata.create_all(bind=engine)
@@ -33,13 +33,13 @@ app.include_router(api_router, prefix="/api/v1")
 # Создаем папки для загрузок
 upload_dirs = [
     "uploads/products",
-    "uploads/gallery", 
     "uploads/videos",
     "uploads/projects",
     "uploads/certificates",
     "uploads/technologies",
     "uploads/thumbnails",
-    "uploads/materials"
+    "uploads/materials",
+    "uploads/applications"
 ]
 
 for upload_dir in upload_dirs:

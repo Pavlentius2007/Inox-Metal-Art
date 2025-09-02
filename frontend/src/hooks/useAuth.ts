@@ -110,6 +110,7 @@ export const useAuth = (): AuthContextType => {
       localStorage.setItem(USER_KEY, JSON.stringify(userInfo));
       
       console.log('useAuth: User authenticated, state updated');
+      console.log('useAuth: Current state - token:', !!newToken, 'user:', !!userInfo, 'isAuthenticated will be:', !!newToken);
     } catch (error) {
       console.error('useAuth: Error decoding token:', error);
       // Fallback: используем только переданные данные
@@ -125,10 +126,11 @@ export const useAuth = (): AuthContextType => {
       localStorage.setItem(USER_KEY, JSON.stringify(userInfo));
       
       console.log('useAuth: User authenticated with fallback data');
+      console.log('useAuth: Current state - token:', !!newToken, 'user:', !!userInfo, 'isAuthenticated will be:', !!newToken);
     }
   }, []);
 
-  return {
+  const result = {
     user,
     token,
     isAuthenticated: !!token,
@@ -137,4 +139,13 @@ export const useAuth = (): AuthContextType => {
     logout,
     checkAuth
   };
+  
+  console.log('useAuth: Returning state:', {
+    hasUser: !!user,
+    hasToken: !!token,
+    isAuthenticated: !!token,
+    isLoading
+  });
+  
+  return result;
 };

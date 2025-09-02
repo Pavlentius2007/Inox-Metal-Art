@@ -8,7 +8,10 @@ import {
   MessageCircle as MessageCircleIcon,
   Send as SendIcon,
   CheckCircle as CheckCircleIcon2,
-  AlertCircle
+  AlertCircle,
+  Factory,
+  Shield,
+  Globe
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 
@@ -66,6 +69,19 @@ const Contacts: React.FC = () => {
     whatsapp: '+7 953 862 8581',
     address: 'Россия, г. Москва',
     workingHours: 'Пн-Пт: 9:00-18:00 (МСК)'
+  };
+
+  // Информация о заводе в Таиланде
+  const factoryInfo = {
+    name: 'HWA LIN STAINLESS STEEL INDUSTRY Co., Ltd.',
+    address: '61/271-272 Rama 9 Road, HuayKwang, HuayKwang, Bangkok 10310 Thailand',
+    addressThai: '6.พระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพมหานคร 10310',
+    phone: '+66 2 246-6675',
+    fax: '+66 2 246-6679',
+    coordinates: {
+      lat: 13.7563, // Примерные координаты Бангкока
+      lng: 100.5018
+    }
   };
 
   const productInterests = [
@@ -409,6 +425,96 @@ const Contacts: React.FC = () => {
                     <MessageCircleIcon className="w-4 h-4 mr-2" />
                     Написать в Telegram
                   </Button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Factory Location Map */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="mt-12"
+            >
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Расположение завода</h2>
+              <p className="text-lg text-gray-600 mb-8">
+                Наш основной производственный завод находится в Таиланде, где мы производим высококачественную 
+                нержавеющую сталь с использованием японских технологий и сырья Nisshin.
+              </p>
+              
+              {/* Factory Info Card */}
+              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 mb-4">{factoryInfo.name}</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-start space-x-3">
+                        <MapPinIcon className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+                        <div>
+                          <p className="text-gray-900 font-medium">{factoryInfo.address}</p>
+                          <p className="text-gray-600 text-sm mt-1">{factoryInfo.addressThai}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <PhoneCall className="w-5 h-5 text-green-600" />
+                        <a href={`tel:${factoryInfo.phone}`} className="text-gray-900 hover:text-blue-600 transition-colors">
+                          {factoryInfo.phone}
+                        </a>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <MailIcon className="w-5 h-5 text-blue-600" />
+                        <span className="text-gray-900">Факс: {factoryInfo.fax}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Google Maps Embed */}
+                  <div className="h-64 md:h-full rounded-xl overflow-hidden">
+                    <iframe
+                      title="Расположение завода HWA LIN в Бангкоке"
+                      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${factoryInfo.coordinates.lat},${factoryInfo.coordinates.lng}&zoom=15`}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                      className="rounded-xl"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Factory Info */}
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="bg-blue-50 rounded-xl p-6 text-center">
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Factory className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Производство</h4>
+                  <p className="text-gray-600 text-sm">
+                    Современное оборудование и японские технологии для производства премиальной нержавеющей стали
+                  </p>
+                </div>
+                
+                <div className="bg-green-50 rounded-xl p-6 text-center">
+                  <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Shield className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Качество</h4>
+                  <p className="text-gray-600 text-sm">
+                    Сырье Nisshin и строгий контроль качества на всех этапах производства
+                  </p>
+                </div>
+                
+                <div className="bg-orange-50 rounded-xl p-6 text-center">
+                  <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Globe className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Логистика</h4>
+                  <p className="text-gray-600 text-sm">
+                    Отлаженная система поставок по всему миру с основного склада в Таиланде
+                  </p>
                 </div>
               </div>
             </motion.div>

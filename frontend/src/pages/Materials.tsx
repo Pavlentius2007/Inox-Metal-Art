@@ -5,7 +5,6 @@ import {
   Eye,
   Download,
   FileText,
-  ArrowLeft,
   Award,
   Globe,
   Grid,
@@ -13,20 +12,22 @@ import {
   File,
   FileImage,
   FileSpreadsheet,
-  FileCode
+  FileCode,
+  X
 } from 'lucide-react';
 import Button from '../components/ui/Button';
+import '../styles/materials.css';
 
 interface Material {
   id: number;
   name: string;
   category: string;
   description: string;
-  fileType: string;
-  fileSize: string;
-  downloadUrl: string;
+  file_type: string;
+  file_size: string;
+  download_url: string;
   tags: string[];
-  uploadDate: string;
+  upload_date: string;
   downloads: number;
 }
 
@@ -50,6 +51,8 @@ const Materials: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+
+
   // Получение материалов с сервера
   React.useEffect(() => {
     const fetchMaterials = async () => {
@@ -72,6 +75,65 @@ const Materials: React.FC = () => {
 
     fetchMaterials();
   }, []);
+
+  // Функция скачивания материала
+  const handleDownload = async (material: Material) => {
+    try {
+      // Показываем индикатор загрузки
+      const downloadButton = document.querySelector(`[data-material-id="${material.id}"]`);
+      if (downloadButton) {
+        downloadButton.innerHTML = '<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>';
+        downloadButton.setAttribute('disabled', 'true');
+      }
+
+      // Увеличиваем счетчик скачиваний
+      await fetch(`http://localhost:8000/api/v1/materials/${material.id}/download`, {
+        method: 'POST',
+      });
+
+      // Скачиваем файл
+      const response = await fetch(`http://localhost:8000/uploads/${material.file_path}`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = material.name;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        
+        // Обновляем локальное состояние
+        setMaterials(prev => prev.map(m => 
+          m.id === material.id ? { ...m, downloads: m.downloads + 1 } : m
+        ));
+
+        // Показываем уведомление об успехе
+        if (downloadButton) {
+          downloadButton.innerHTML = '<CheckCircle className="w-4 h-4 mx-auto text-green-500" />';
+          setTimeout(() => {
+            if (downloadButton) {
+              downloadButton.innerHTML = '<Download className="w-4 h-4 mr-2" />Скачать';
+              downloadButton.removeAttribute('disabled');
+            }
+          }, 2000);
+        }
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Ошибка скачивания:', error);
+      alert(`Ошибка при скачивании файла: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+      
+      // Восстанавливаем кнопку
+      const downloadButton = document.querySelector(`[data-material-id="${material.id}"]`);
+      if (downloadButton) {
+        downloadButton.innerHTML = '<Download className="w-4 h-4 mr-2" />Скачать';
+        downloadButton.removeAttribute('disabled');
+      }
+    }
+  };
 
   const filteredMaterials = materials.filter(material => {
     return selectedCategory === 'all' || material.category === selectedCategory;
@@ -100,159 +162,24 @@ const Materials: React.FC = () => {
 
 
 
-  // Детальная страница материала
-  if (selectedMaterial) {
-    return (
-      <div className="min-h-screen bg-white pt-32">
-        {/* Back Button */}
-        <div className="bg-gray-50 border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <button
-              onClick={() => setSelectedMaterial(null)}
-              className="flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors duration-200"
-            >
-              <ArrowLeft className="w-5 h-5" />
-              <span>Вернуться к материалам</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Material Detail */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            {/* Material Info */}
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8 }}
-              className="space-y-8"
-            >
-              <div className="space-y-6">
-                                   <div className="flex items-center space-x-4">
-                     <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-2xl flex items-center justify-center">
-                       {React.createElement(getFileIcon(selectedMaterial.fileType), { className: "w-8 h-8 text-white" })}
-                     </div>
-                  <div>
-                    <h1 className="text-4xl font-bold text-gray-900">{selectedMaterial.name}</h1>
-                    <p className="text-xl text-gray-600">{selectedMaterial.description}</p>
-                  </div>
-                </div>
-
-                {/* File Information */}
-                <div className="bg-gray-50 p-6 rounded-xl">
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <File className="w-6 h-6 mr-2 text-blue-600" />
-                    Информация о файле
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-sm">
-                      <span className="text-gray-500">Тип файла:</span>
-                      <div className="text-gray-700 font-medium">{selectedMaterial.fileType.toUpperCase()}</div>
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-gray-500">Размер:</span>
-                      <div className="text-gray-700 font-medium">{selectedMaterial.fileSize}</div>
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-gray-500">Дата загрузки:</span>
-                      <div className="text-gray-700 font-medium">{selectedMaterial.uploadDate}</div>
-                    </div>
-                    <div className="text-sm">
-                      <span className="text-gray-500">Скачиваний:</span>
-                      <div className="text-gray-700 font-medium">{selectedMaterial.downloads}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <Globe className="w-6 h-6 mr-2 text-blue-600" />
-                    Теги
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedMaterial.tags.map((tag, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Download Section */}
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="space-y-8"
-            >
-              {/* Download Button */}
-              <div className="bg-blue-50 p-8 rounded-2xl text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full mx-auto mb-6 flex items-center justify-center">
-                  <Download className="w-12 h-12 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                  Скачать материал
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Нажмите кнопку ниже для скачивания файла
-                </p>
-                                 <Button 
-                   size="lg" 
-                   className="w-full"
-                   onClick={() => window.open(`http://localhost:8000/${selectedMaterial.downloadUrl}`, '_blank')}
-                 >
-                  <Download className="w-5 h-5 mr-2" />
-                  Скачать {selectedMaterial.fileType.toUpperCase()}
-                </Button>
-                <p className="text-xs text-gray-500 mt-4">
-                  Файл будет загружен в папку загрузок вашего браузера
-                </p>
-              </div>
-
-              {/* Additional Info */}
-              <div className="bg-gray-50 p-6 rounded-xl">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">
-                  Дополнительная информация
-                </h3>
-                <ul className="space-y-2 text-sm text-gray-600">
-                  <li className="flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Файл проверен на вирусы</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Актуальная версия документа</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    <span>Бесплатное скачивание</span>
-                  </li>
-                </ul>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Детальная страница заменена модальным окном ниже
 
   return (
     <div className="min-h-screen bg-white pt-32">
       {/* Hero Section */}
-      <section className="relative py-20 bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900 overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-600/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"></div>
-        </div>
+      <section className="relative py-20 overflow-hidden materials-hero">
+        {/* Фото фон */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900" style={{
+          backgroundImage: 'url("/images/materials-hero-bg.jpg")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}></div>
         
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+        {/* Затемнение поверх фото */}
+        <div className="absolute inset-0 bg-black/50"></div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white hero-text">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -352,11 +279,10 @@ const Materials: React.FC = () => {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 cursor-pointer"
-                  onClick={() => setSelectedMaterial(material)}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 h-full min-h-[420px] flex flex-col"
                 >
                   {/* Material Icon */}
-                                     <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                  <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
                      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
                      <div className="absolute inset-0 flex items-center justify-center">
                        <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
@@ -366,11 +292,11 @@ const Materials: React.FC = () => {
                    </div>
 
                   {/* Material Info */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
+                  <div className="p-6 flex flex-col flex-1">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 leading-7 min-h-[56px]">
                       {material.name}
                     </h3>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-gray-600 mb-4 h-12 overflow-hidden">
                       {material.description}
                     </p>
 
@@ -378,16 +304,13 @@ const Materials: React.FC = () => {
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Тип:</span>
-                        <span className="text-gray-700 font-medium">{material.fileType.toUpperCase()}</span>
+                        <span className="text-gray-700 font-medium">{material.file_type.toUpperCase()}</span>
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">Размер:</span>
-                        <span className="text-gray-700 font-medium">{material.fileSize}</span>
+                        <span className="text-gray-700 font-medium">{material.file_size}</span>
                       </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Скачиваний:</span>
-                        <span className="text-gray-700 font-medium">{material.downloads}</span>
-                      </div>
+                      
                     </div>
 
                     {/* Tags */}
@@ -408,10 +331,30 @@ const Materials: React.FC = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex justify-center">
-                      <Button variant="outline" size="sm" fullWidth>
+                    <div className="flex gap-2 mt-auto">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedMaterial(material);
+                        }}
+                        className="flex-1"
+                      >
                         <Eye className="w-4 h-4 mr-2" />
                         Подробнее
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        data-material-id={material.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDownload(material);
+                        }}
+                        className="flex-1"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Скачать
                       </Button>
                     </div>
                   </div>
@@ -468,6 +411,73 @@ const Materials: React.FC = () => {
           </motion.div>
         </div>
       </section>
+
+      {/* Modal: Material Details */}
+      {selectedMaterial && (
+        <div
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] flex items-center justify-center p-4"
+          onClick={(e) => {
+            if (e.currentTarget === e.target) setSelectedMaterial(null);
+          }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between p-6 border-b border-gray-100">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center">
+                  {React.createElement(getFileIcon(selectedMaterial.file_type), { className: 'w-6 h-6 text-white' })}
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">{selectedMaterial.name}</h3>
+                  <p className="text-gray-600">{selectedMaterial.category}</p>
+                </div>
+              </div>
+              <button className="p-2 hover:bg-gray-100 rounded-lg" onClick={() => setSelectedMaterial(null)}>
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6 space-y-6">
+              <p className="text-gray-700">{selectedMaterial.description}</p>
+              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
+                <div className="text-sm">
+                  <span className="text-gray-500">Тип:</span>
+                  <div className="text-gray-800 font-medium">{selectedMaterial.file_type.toUpperCase()}</div>
+                </div>
+                <div className="text-sm">
+                  <span className="text-gray-500">Размер:</span>
+                  <div className="text-gray-800 font-medium">{selectedMaterial.file_size}</div>
+                </div>
+                <div className="text-sm">
+                  <span className="text-gray-500">Дата загрузки:</span>
+                  <div className="text-gray-800 font-medium">{selectedMaterial.upload_date}</div>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {selectedMaterial.tags.map((tag, idx) => (
+                  <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+              <div>
+                <Button
+                  size="lg"
+                  className="w-full"
+                  data-material-id={selectedMaterial.id}
+                  onClick={() => handleDownload(selectedMaterial)}
+                >
+                  <Download className="w-5 h-5 mr-2" /> Скачать {selectedMaterial.file_type.toUpperCase()}
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };

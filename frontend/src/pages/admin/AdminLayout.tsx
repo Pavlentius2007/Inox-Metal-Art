@@ -24,7 +24,7 @@ import ImportProducts from './ImportProducts';
 import ImportProjects from './ImportProjects';
 import MaterialsManagement from './MaterialsManagement';
 import ImportMaterials from './ImportMaterials';
-import GalleryManagement from './GalleryManagement';
+
 import ProjectsManagement from './ProjectsManagement';
 
 const AdminLayout: React.FC = () => {
@@ -45,9 +45,8 @@ const AdminLayout: React.FC = () => {
     { path: '/admin/import-projects', label: 'Импорт проектов', icon: Download },
     { path: '/admin/materials', label: 'Материалы', icon: FileText },
     { path: '/admin/import-materials', label: 'Импорт материалов', icon: Download },
-    { path: '/admin/gallery', label: 'Галерея', icon: Image },
+
     { path: '/admin/projects', label: 'Проекты', icon: FolderOpen },
-    { path: '/admin/certificates', label: 'Сертификаты', icon: Award },
     { path: '/admin/news', label: 'Новости', icon: FileText },
     { path: '/admin/users', label: 'Пользователи', icon: Users },
     { path: '/admin/analytics', label: 'Аналитика', icon: BarChart3 },
@@ -157,7 +156,7 @@ const AdminLayout: React.FC = () => {
             <Route path="import-projects" element={<ImportProjects />} />
             <Route path="materials" element={<MaterialsManagement />} />
             <Route path="import-materials" element={<ImportMaterials />} />
-            <Route path="gallery" element={<GalleryManagement />} />
+
             <Route path="projects" element={<ProjectsManagement />} />
             {/* Добавьте другие маршруты здесь */}
           </Routes>

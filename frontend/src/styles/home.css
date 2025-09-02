@@ -1,0 +1,92 @@
+/* Стили для главной страницы */
+
+.home-hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.home-hero-video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+.home-hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 2;
+}
+
+.home-hero-content {
+  position: relative;
+  z-index: 3;
+}
+
+/* Улучшенная читаемость текста */
+.home-hero .hero-text {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Анимация появления фона */
+.home-hero {
+  animation: fadeInBackground 1.5s ease-in-out;
+}
+
+@keyframes fadeInBackground {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fallback для статичного изображения */
+.home-hero-fallback {
+  background-image: url('/images/home-hero-poster.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #374151 100%);
+}
+
+/* Скрытие видео если оно не поддерживается */
+.home-hero:not(.video-supported) .home-hero-video {
+  display: none;
+}
+
+.home-hero:not(.video-supported) {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #374151 100%);
+}
+
+/* Адаптивность для мобильных */
+@media (max-width: 768px) {
+  .home-hero {
+    min-height: 80vh;
+  }
+  
+  .home-hero-video {
+    object-position: center;
+    display: none; /* Отключение видео на мобильных для экономии трафика */
+  }
+  
+  .home-hero-fallback {
+    background-attachment: scroll;
+    min-height: 80vh;
+  }
+  
+  .home-hero {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #374151 100%);
+  }
+}

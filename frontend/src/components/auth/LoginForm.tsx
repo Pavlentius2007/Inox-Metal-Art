@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Lock, Mail, AlertCircle } from 'lucide-react';
 import Button from '../ui/Button';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface LoginFormData {
   email: string;
@@ -17,6 +18,7 @@ interface LoginFormProps {
 const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onLoginError }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
   
   // Тестовый лог для проверки рендеринга
   console.log('LoginForm: Component rendered');
@@ -54,6 +56,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, onLoginError }) =
       if (response.ok) {
         const result = await response.json();
         console.log('Login successful, token received');
+        
+        // Используем глобальный контекст для входа
+        login(result.access_token);
         
         // Добавляем небольшую задержку для синхронизации состояния
         setTimeout(() => {

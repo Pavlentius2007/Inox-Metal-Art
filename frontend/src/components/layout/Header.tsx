@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
+import { useApplicationModal } from '../../App';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isApplicationModalOpen, setIsApplicationModalOpen } = useApplicationModal();
   const location = useLocation();
 
   // Закрытие мобильного меню при изменении маршрута
@@ -16,10 +18,8 @@ const Header: React.FC = () => {
     { path: '/', label: 'Главная' },
     { path: '/about', label: 'О компании' },
     { path: '/products', label: 'Продукция' },
-    { path: '/gallery', label: 'Галерея' },
     { path: '/materials', label: 'Материалы' },
     { path: '/projects', label: 'Проекты' },
-    { path: '/certificates', label: 'Сертификаты' },
     { path: '/contacts', label: 'Контакты' }
   ];
 
@@ -52,6 +52,10 @@ const Header: React.FC = () => {
         ease: "easeInOut"
       }
     }
+  };
+
+  const openApplicationModal = () => {
+    setIsApplicationModalOpen(true);
   };
 
   return (
@@ -113,16 +117,15 @@ const Header: React.FC = () => {
 
           {/* CTA Button */}
           <div className="hidden lg:flex items-center">
-            <Link to="/application">
-              <motion.button
-                className="bg-gradient-to-r from-blue-700 to-blue-900 text-white px-6 lg:px-8 py-2.5 lg:py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200 text-sm lg:text-base hover:from-blue-800 hover:to-blue-900"
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                aria-label="Оставить заявку"
-              >
-                Оставить заявку
-              </motion.button>
-            </Link>
+            <motion.button
+              onClick={openApplicationModal}
+              className="bg-gradient-to-r from-blue-700 to-blue-900 text-white px-6 lg:px-8 py-2.5 lg:py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-200 text-sm lg:text-base hover:from-blue-800 hover:to-blue-900 relative z-20"
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Оставить заявку"
+            >
+              Оставить заявку
+            </motion.button>
           </div>
 
           {/* Mobile Menu Button */}
@@ -168,12 +171,15 @@ const Header: React.FC = () => {
                   {item.label}
                 </Link>
               ))}
+
+              {/* CTA кнопка */}
               <div className="pt-4 border-t border-gray-100">
-                <Link to="/application" className="block">
-                  <button className="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-800 hover:to-blue-900 transition-all duration-200">
-                    Оставить заявку
-                  </button>
-                </Link>
+                <button 
+                  onClick={openApplicationModal}
+                  className="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-800 hover:to-blue-900 transition-all duration-200"
+                >
+                  Оставить заявку
+                </button>
               </div>
             </div>
           </motion.div>
