@@ -444,7 +444,7 @@ const ColorPicker = forwardRef<HTMLDivElement, ColorPickerProps>(({
             max="360"
             value={hue}
             onChange={handleHueChange}
-            className="w-full h-2 bg-gradient-to-r from-red-500 via-yellow-500 via-blue-500 to-purple-500 rounded-lg appearance-none cursor-pointer"
+            className="w-full h-2 bg-gradient-to-r from-red-500 via-yellow-500 to-purple-500 rounded-lg appearance-none cursor-pointer"
           />
         </div>
         

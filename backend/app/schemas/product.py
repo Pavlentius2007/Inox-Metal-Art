@@ -40,6 +40,7 @@ class ProductBase(BaseModel):
     features: Optional[List[str]] = []
     image_path: Optional[str] = None  # Основное изображение
     images: Optional[List[str]] = []  # Дополнительные изображения
+    videos: Optional[List[str]] = []  # Видео файлы
     specifications: Optional[Specifications] = None
     detailed: Optional[Detailed] = None
     price: Optional[float] = None
@@ -56,6 +57,7 @@ class ProductUpdate(BaseModel):
     features: Optional[List[str]] = None
     image_path: Optional[str] = None
     images: Optional[List[str]] = None
+    videos: Optional[List[str]] = None
     specifications: Optional[Specifications] = None
     detailed: Optional[Detailed] = None
     price: Optional[float] = None

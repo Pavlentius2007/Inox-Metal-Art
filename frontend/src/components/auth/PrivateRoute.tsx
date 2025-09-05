@@ -39,7 +39,7 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 flex items-center justify-center p-4">
         <LoginForm
-          onLoginSuccess={(token) => {
+          onLoginSuccess={() => {
             console.log('LoginForm: Login successful, redirecting...');
             // После успешного входа перенаправляем на админ-панель
             navigate('/admin', { replace: true });

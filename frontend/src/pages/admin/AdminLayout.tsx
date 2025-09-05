@@ -1,30 +1,23 @@
 import React, { useState } from 'react';
-import { Link, useLocation, Outlet, Routes, Route, useNavigate } from 'react-router-dom';
+import { Link, useLocation, Routes, Route, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   Package,
-  Image,
   FolderOpen,
-  Award,
   Users,
   Settings,
   BarChart3,
   FileText,
   LogOut,
   X,
-  Download,
   User
 } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import { useAuth } from '../../hooks/useAuth';
 import Dashboard from './Dashboard';
 import ProductsManagement from './ProductsManagement';
-import ImportProducts from './ImportProducts';
-import ImportProjects from './ImportProjects';
 import MaterialsManagement from './MaterialsManagement';
-import ImportMaterials from './ImportMaterials';
-
 import ProjectsManagement from './ProjectsManagement';
 
 const AdminLayout: React.FC = () => {
@@ -41,11 +34,7 @@ const AdminLayout: React.FC = () => {
   const menuItems = [
     { path: '/admin', label: 'Дашборд', icon: LayoutDashboard },
     { path: '/admin/products', label: 'Продукция', icon: Package },
-    { path: '/admin/import', label: 'Импорт продуктов', icon: Download },
-    { path: '/admin/import-projects', label: 'Импорт проектов', icon: Download },
     { path: '/admin/materials', label: 'Материалы', icon: FileText },
-    { path: '/admin/import-materials', label: 'Импорт материалов', icon: Download },
-
     { path: '/admin/projects', label: 'Проекты', icon: FolderOpen },
     { path: '/admin/news', label: 'Новости', icon: FileText },
     { path: '/admin/users', label: 'Пользователи', icon: Users },
@@ -152,11 +141,7 @@ const AdminLayout: React.FC = () => {
           <Routes>
             <Route index element={<Dashboard />} />
             <Route path="products" element={<ProductsManagement />} />
-            <Route path="import" element={<ImportProducts />} />
-            <Route path="import-projects" element={<ImportProjects />} />
             <Route path="materials" element={<MaterialsManagement />} />
-            <Route path="import-materials" element={<ImportMaterials />} />
-
             <Route path="projects" element={<ProjectsManagement />} />
             {/* Добавьте другие маршруты здесь */}
           </Routes>

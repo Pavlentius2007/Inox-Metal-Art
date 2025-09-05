@@ -33,6 +33,7 @@ class Product(Base):
     features = Column(JSONString, nullable=True)  # Используем наш кастомный тип
     image_path = Column(String(500), nullable=True)  # Основное изображение
     images = Column(JSONString, nullable=True)  # Массив путей к дополнительным изображениям
+    videos = Column(JSONString, nullable=True)  # Массив путей к видео файлам
     specifications = Column(JSONString, nullable=True)  # Технические характеристики
     detailed = Column(JSONString, nullable=True)  # Детальная информация
     price = Column(Float, nullable=True)  # Цена

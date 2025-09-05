@@ -213,8 +213,6 @@ const ApplicationForm: React.FC = () => {
           >
             <option value="">Выберите тип продукции</option>
             <option value="plates">Плиты и листы</option>
-            <option value="tubes">Трубы</option>
-            <option value="profiles">Профили</option>
             <option value="coatings">Покрытия</option>
             <option value="other">Другое</option>
           </select>

@@ -15,6 +15,7 @@ import {
   Palette
 } from 'lucide-react';
 import Button from '../components/ui/Button';
+import CertificateModal from '../components/modals/CertificateModal';
 import { useApplicationModal } from '../App';
 import '../styles/home.css';
 
@@ -22,9 +23,40 @@ const Home: React.FC = () => {
   // Состояние для модального окна заявки
   const { isApplicationModalOpen, setIsApplicationModalOpen } = useApplicationModal();
   
-  // Функция для открытия модального окна
+  // Состояние для модального окна сертификата
+  const [certificateModal, setCertificateModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    pdfPath: string;
+    icon: React.ReactNode;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    pdfPath: '',
+    icon: null
+  });
+  
+  // Функция для открытия модального окна заявки
   const openApplicationModal = () => {
     setIsApplicationModalOpen(true);
+  };
+
+  // Функция для открытия модального окна сертификата
+  const openCertificateModal = (title: string, description: string, pdfPath: string, icon: React.ReactNode) => {
+    setCertificateModal({
+      isOpen: true,
+      title,
+      description,
+      pdfPath,
+      icon
+    });
+  };
+
+  // Функция для закрытия модального окна сертификата
+  const closeCertificateModal = () => {
+    setCertificateModal(prev => ({ ...prev, isOpen: false }));
   };
 
   // Проверка поддержки видео
@@ -120,30 +152,66 @@ const Home: React.FC = () => {
     { number: '15+', label: 'Стран поставок' }
   ];
 
-  // Продукты будут загружаться с API
-  const products: any[] = [];
+  // Состояние для загрузки данных
+  const [projects, setProjects] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Реальные проекты из оригинального сайта
-  const projects = [
-    {
-      name: 'Dubai Frame',
-      location: 'Дубай, ОАЭ',
-      description: 'Золотая фасадная рама с PVD-покрытием',
-      image: '/images/projects/dubai-frame.jpg'
-    },
-    {
-      name: 'Eye of Qatar',
-      location: 'Доха, Катар',
-      description: 'Облицовка скульптуры нержавеющей сталью',
-      image: '/images/projects/eye-qatar.jpg'
-    },
-    {
-      name: 'Lusail Marina Twin Towers',
-      location: 'Доха, Катар',
-      description: 'Фасадные панели из дуплекс-стали',
-      image: '/images/projects/lusail-towers.jpg'
-    }
-  ];
+  // Загружаем проекты с API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Загружаем проекты
+        const projectsResponse = await fetch('http://localhost:8000/api/v1/projects/');
+        if (projectsResponse.ok) {
+          const projectsData = await projectsResponse.json();
+          // Берем только первые 3 проекта для главной страницы
+          setProjects(projectsData.projects?.slice(0, 3) || []);
+        }
+
+        // Загружаем продукты
+        const productsResponse = await fetch('http://localhost:8000/api/v1/products/');
+        if (productsResponse.ok) {
+          const productsData = await productsResponse.json();
+          // Берем только первые 3 продукта для главной страницы
+          setProducts(productsData.products?.slice(0, 3) || []);
+        }
+      } catch (error) {
+        console.error('Ошибка загрузки данных:', error);
+        // Fallback данные если API недоступен
+        setProjects([
+          {
+            id: 1,
+            title: 'Dubai Frame',
+            location: 'Дубай, ОАЭ',
+            description: 'Золотая фасадная рама с PVD-покрытием',
+            main_image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop&crop=center'
+          },
+          {
+            id: 2,
+            title: 'Eye of Qatar',
+            location: 'Доха, Катар',
+            description: 'Облицовка скульптуры нержавеющей сталью',
+            main_image: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center'
+          },
+          {
+            id: 3,
+            title: 'Lusail Marina Twin Towers',
+            location: 'Доха, Катар',
+            description: 'Фасадные панели из дуплекс-стали',
+            main_image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop&crop=center'
+          }
+        ]);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // Реальные отзывы (адаптированные)
   const testimonials = [
@@ -199,50 +267,18 @@ const Home: React.FC = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.2 }}
-                className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
+                className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight drop-shadow-2xl"
               >
-                Инокс Металл Арт
+                INOX METAL ART
               </motion.h1>
               <motion.p
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 1, delay: 0.4 }}
-                className="text-xl md:text-2xl lg:text-3xl text-blue-100 mb-8 max-w-4xl mx-auto leading-relaxed"
+                className="text-xl md:text-2xl lg:text-3xl text-white mb-8 max-w-4xl mx-auto leading-relaxed drop-shadow-xl font-medium"
               >
-                Декоративная нержавеющая сталь – эксперты с 1991 года
+                By HWA LIN Stainless Steel – Decorative stainless steel experts since 1991
               </motion.p>
-              <motion.p
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, delay: 0.5 }}
-                className="text-lg md:text-xl text-blue-200 mb-8 max-w-5xl mx-auto leading-relaxed"
-              >
-                Основана в 1991 году в Таиланде для производства устойчивых художественных отделок на листах нержавеющей стали. 
-                Мы сочетаем японские технологии, сырье Nisshin и низкие производственные издержки в Таиланде.
-              </motion.p>
-              <div
-                className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-              >
-                <button
-                  className="bg-gray-700 hover:bg-gray-800 text-white text-lg px-8 py-4 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl relative z-20"
-                  onClick={openApplicationModal}
-                >
-                  Оставить заявку
-                  <ArrowRight className="w-5 h-5 ml-2 inline" />
-                </button>
-                
-
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="text-lg px-8 py-4 border-white text-white hover:bg-white hover:text-blue-900"
-                  onClick={handleDownloadCatalog}
-                  data-catalog-download
-                >
-                  <Download className="w-5 h-5 mr-2" />
-                  Скачать каталог
-                </Button>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -355,45 +391,95 @@ const Home: React.FC = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-            {products.map((product, index) => (
-              <motion.div
-                key={product.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group"
-              >
-                <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                      <Palette className="w-10 h-10 text-white" />
+            {loading ? (
+              // Показываем скелетоны во время загрузки
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse">
+                  <div className="h-48 bg-gray-200"></div>
+                  <div className="p-6">
+                    <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                    <div className="space-y-2 mb-4">
+                      <div className="h-4 bg-gray-200 rounded"></div>
+                      <div className="h-4 bg-gray-200 rounded"></div>
                     </div>
+                    <div className="h-10 bg-gray-200 rounded"></div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-600 mb-4">
-                    {product.description}
-                  </p>
-                  <div className="space-y-2 mb-4">
-                    {product.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center space-x-2 text-sm text-gray-600">
-                        <CheckCircle className="w-4 h-4 text-green-500" />
-                        <span>{feature}</span>
+              ))
+            ) : products.length > 0 ? (
+              products.map((product, index) => (
+                <motion.div
+                  key={product.id || product.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group"
+                >
+                  <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                    {product.main_image || product.image ? (
+                      <img
+                        src={product.main_image || product.image}
+                        alt={product.title || product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          // Fallback изображение если основное не загрузилось
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop&crop=center';
+                        }}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
+                    )}
+                    {!product.main_image && !product.image && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
+                          <Palette className="w-10 h-10 text-white" />
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
-                  <Button variant="outline" size="sm" fullWidth>
-                    Подробнее
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
+                      {product.title || product.name}
+                    </h3>
+                    <p className="text-gray-600 mb-4">
+                      {product.description}
+                    </p>
+                    {product.features && product.features.length > 0 && (
+                      <div className="space-y-2 mb-4">
+                        {product.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-center space-x-2 text-sm text-gray-600">
+                            <CheckCircle className="w-4 h-4 text-green-500" />
+                            <span>{feature}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <Link to="/products">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        fullWidth
+                        icon={<ChevronRight className="w-4 h-4" />}
+                        iconPosition="right"
+                      >
+                        Подробнее
+                      </Button>
+                    </Link>
+                  </div>
+                </motion.div>
+              ))
+            ) : (
+              // Показываем заглушку если нет продуктов
+              <div className="col-span-full text-center py-12">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Palette className="w-12 h-12 text-gray-400" />
                 </div>
-              </motion.div>
-            ))}
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Продукция загружается</h3>
+                <p className="text-gray-600">Добавьте продукты через админ-панель</p>
+              </div>
+            )}
           </div>
 
           <motion.div
@@ -403,12 +489,30 @@ const Home: React.FC = () => {
             viewport={{ once: true }}
             className="text-center"
           >
-            <Link to="/products">
-              <Button variant="primary" size="lg">
-                Смотреть весь каталог
-                <ArrowRight className="w-5 h-5 ml-2" />
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to="/products">
+                <Button 
+                  variant="primary" 
+                  size="lg"
+                  icon={<ArrowRight className="w-5 h-5" />}
+                  iconPosition="right"
+                >
+                  Смотреть весь каталог
+                </Button>
+              </Link>
+              
+              <Button 
+                variant="primary" 
+                size="lg"
+                onClick={handleDownloadCatalog}
+                icon={<Download className="w-5 h-5" />}
+                iconPosition="left"
+                data-catalog-download
+                className="hover:from-blue-500 hover:to-blue-600"
+              >
+                Скачать каталог
               </Button>
-            </Link>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -432,40 +536,217 @@ const Home: React.FC = () => {
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <motion.div
-                key={project.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
-              >
-                <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                      <Globe className="w-8 h-8 text-white" />
-                    </div>
+            {loading ? (
+              // Показываем скелетоны во время загрузки
+              Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="bg-white rounded-xl shadow-lg overflow-hidden animate-pulse">
+                  <div className="h-48 bg-gray-200"></div>
+                  <div className="p-6">
+                    <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded mb-4"></div>
+                    <div className="h-10 bg-gray-200 rounded"></div>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
-                    {project.name}
-                  </h3>
-                  <p className="text-blue-600 font-medium mb-2">
-                    {project.location}
-                  </p>
-                  <p className="text-gray-600 mb-4">
-                    {project.description}
-                  </p>
-                  <Button variant="outline" size="sm" fullWidth>
-                    Подробнее
-                    <ChevronRight className="w-4 h-4 ml-2" />
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
+              ))
+            ) : (
+              projects.map((project, index) => (
+                <motion.div
+                  key={project.id || project.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  viewport={{ once: true }}
+                  className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden group"
+                >
+                  <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                    {project.main_image_path ? (
+                      <img
+                        src={`http://localhost:8000/${project.main_image_path}`}
+                        alt={project.title || project.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          // Fallback изображение если основное не загрузилось
+                          e.currentTarget.src = 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop&crop=center';
+                        }}
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent">
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="text-white text-center">
+                            <div className="text-lg font-semibold mb-1">{(project.title || project.name)?.split(' ').slice(0, 2).join(' ')}</div>
+                            <div className="text-sm opacity-75">{project.location}</div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200">
+                      {project.title || project.name}
+                    </h3>
+                    <p className="text-blue-600 font-medium mb-2">
+                      {project.location}
+                    </p>
+                    <p className="text-gray-600 mb-4">
+                      {project.description}
+                    </p>
+
+                  </div>
+                </motion.div>
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Certificates Section */}
+      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Сертификаты и стандарты
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Наша продукция соответствует международным стандартам качества и экологическим требованиям
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* ISO 9001 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center group"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Award className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                ISO 9001:2015
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Система менеджмента качества
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                fullWidth
+                onClick={() => openCertificateModal(
+                  'ISO 9001:2015',
+                  'Система менеджмента качества',
+                  '/certificates/ISO 9001-2015 (Valid 23.08.2020).pdf',
+                  <Award className="w-8 h-8 text-white" />
+                )}
+              >
+                Посмотреть
+              </Button>
+            </motion.div>
+
+            {/* ISO 14001 */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center group"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Shield className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                ISO 14001
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Экологический менеджмент
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                fullWidth
+                onClick={() => openCertificateModal(
+                  'ISO 14001',
+                  'Экологический менеджмент',
+                  '/certificates/Environmental Management (ISO 14001).pdf',
+                  <Shield className="w-8 h-8 text-white" />
+                )}
+              >
+                Посмотреть
+              </Button>
+            </motion.div>
+
+            {/* LEED */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center group"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-emerald-600 to-emerald-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Globe className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                LEED
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Зеленое строительство
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                fullWidth
+                onClick={() => openCertificateModal(
+                  'LEED',
+                  'Зеленое строительство',
+                  '/certificates/LEED Green Building Certificate.pdf',
+                  <Globe className="w-8 h-8 text-white" />
+                )}
+              >
+                Посмотреть
+              </Button>
+            </motion.div>
+
+            {/* Salt Spray Test */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-6 text-center group"
+            >
+              <div className="w-16 h-16 bg-gradient-to-br from-orange-600 to-orange-800 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Salt Spray Test
+              </h3>
+              <p className="text-sm text-gray-600 mb-4">
+                Тест на коррозионную стойкость
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                fullWidth
+                onClick={() => openCertificateModal(
+                  'Salt Spray Test',
+                  'Тест на коррозионную стойкость',
+                  '/certificates/1000hrs. Accelerated Salt Spray Test Certificate (PVD coating).pdf',
+                  <CheckCircle className="w-8 h-8 text-white" />
+                )}
+              >
+                Посмотреть
+              </Button>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -538,13 +819,21 @@ const Home: React.FC = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/application">
-                <Button variant="secondary" size="lg">
+                <Button 
+                  variant="secondary" 
+                  size="lg"
+                  icon={<ArrowRight className="w-5 h-5" />}
+                  iconPosition="right"
+                >
                   Оставить заявку
-                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Link to="/contacts">
-                <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-900">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-white text-white hover:bg-white hover:text-blue-900"
+                >
                   Связаться с нами
                 </Button>
               </Link>
@@ -554,6 +843,16 @@ const Home: React.FC = () => {
       </section>
 
       {/* Application Modal */}
+      
+      {/* Certificate Modal */}
+      <CertificateModal
+        isOpen={certificateModal.isOpen}
+        onClose={closeCertificateModal}
+        title={certificateModal.title}
+        description={certificateModal.description}
+        pdfPath={certificateModal.pdfPath}
+        icon={certificateModal.icon}
+      />
     </div>
   );
 };

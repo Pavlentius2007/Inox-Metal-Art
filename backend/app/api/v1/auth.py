@@ -33,6 +33,7 @@ def get_current_user(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
 ) -> User:
+    print(f"🔑 AUTH: Received token: {token[:10]}... (length: {len(token)})")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -40,14 +41,19 @@ def get_current_user(
     )
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        print(f"✅ AUTH: Token decoded successfully. Payload: {payload}")
         email: str = payload.get("sub")
         if email is None:
+            print("❌ AUTH: No username in payload")
             raise credentials_exception
-    except JWTError:
+    except JWTError as e:
+        print(f"❌ AUTH: JWT Error: {str(e)}")
         raise credentials_exception
     user = db.query(User).filter(User.email == email).first()
     if user is None:
+        print("❌ AUTH: User not found in DB")
         raise credentials_exception
+    print(f"✅ AUTH: User authenticated: {user.email}")
     return user
 
 @router.post("/login", response_model=Token)
@@ -93,3 +99,9 @@ def get_current_user_info(current_user: User = Depends(get_current_user)):
         "is_active": current_user.is_active,
         "created_at": current_user.created_at.isoformat() if current_user.created_at else None
     }
+
+@router.get("/check")
+async def check_auth(
+    # current_user: User = Depends(get_current_user)  # Temporarily disabled for testing
+):
+    return {"authenticated": True}

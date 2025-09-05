@@ -9,8 +9,10 @@ import Products from './pages/Products';
 import Materials from './pages/Materials';
 import Projects from './pages/Projects';
 import Contacts from './pages/Contacts';
+import FAQ from './pages/FAQ';
 import ApplicationForm from './components/ApplicationForm';
 import ApplicationModal from './components/modals/ApplicationModal';
+import { useScrollToTop } from './hooks/useScrollToTop';
 
 // Контекст для глобального состояния модального окна
 interface ApplicationModalContextType {
@@ -42,8 +44,8 @@ const App: React.FC = () => {
 
   return (
     <AuthProvider>
-      <ApplicationModalContext.Provider value={{ isApplicationModalOpen, setIsApplicationModalOpen }}>
-        <Router>
+      <Router>
+        <ApplicationModalContext.Provider value={{ isApplicationModalOpen, setIsApplicationModalOpen }}>
           <Routes>
             {/* Auth routes */}
             <Route path="/admin/login" element={<LoginPage />} />
@@ -67,6 +69,7 @@ const App: React.FC = () => {
               <Route path="/materials" element={<Materials />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/contacts" element={<Contacts />} />
+              <Route path="/faq" element={<FAQ />} />
               <Route path="/application" element={<ApplicationForm />} />
             </Route>
           </Routes>
@@ -78,21 +81,25 @@ const App: React.FC = () => {
               setIsApplicationModalOpen(false);
             }}
           />
-        </Router>
-      </ApplicationModalContext.Provider>
+        </ApplicationModalContext.Provider>
+      </Router>
     </AuthProvider>
   );
 };
 
 // Вспомогательный компонент для публичных страниц
-const LayoutWithHeaderFooter: React.FC = () => (
-  <div className="min-h-screen flex flex-col">
-    <Header />
-    <main className="flex-grow">
-      <Outlet />
-    </main>
-    <Footer />
-  </div>
-);
+const LayoutWithHeaderFooter: React.FC = () => {
+  useScrollToTop(); // Автоматическая прокрутка наверх при смене страницы
+  
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 export default App;

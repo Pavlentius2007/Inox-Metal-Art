@@ -24,13 +24,15 @@ interface ProjectFormProps {
   onSubmit: (data: FormData) => void;
   onCancel: () => void;
   isEditing?: boolean;
+  loading?: boolean;
 }
 
 const ProjectForm: React.FC<ProjectFormProps> = ({
   initialData = {},
   onSubmit,
   onCancel,
-  isEditing = false
+  isEditing = false,
+  loading = false
 }) => {
   const [formData, setFormData] = useState<ProjectFormData>({
     title: initialData.title || '',
@@ -100,8 +102,12 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent | React.MouseEvent) => {
+    if (e) e.preventDefault();
+    
+    console.log('🔧 ProjectForm: Submitting form...');
+    console.log('📁 Main image files:', mainImage);
+    console.log('🖼️ Gallery image files:', galleryImages);
     
     const formDataObj = new FormData();
     formDataObj.append('title', formData.title);
@@ -119,35 +125,37 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
     formDataObj.append('is_featured', formData.is_featured.toString());
     
     if (mainImage.length > 0) {
+      console.log('📤 Adding main image:', mainImage[0].name);
       formDataObj.append('main_image', mainImage[0]);
+    } else {
+      console.log('❌ No main image to upload');
     }
     
     if (galleryImages.length > 0) {
-      galleryImages.forEach(image => {
+      console.log('📤 Adding gallery images:', galleryImages.length);
+      galleryImages.forEach((image, index) => {
+        console.log(`  - Gallery image ${index}:`, image.name);
         formDataObj.append('gallery_images', image);
       });
+    } else {
+      console.log('❌ No gallery images to upload');
+    }
+    
+    // Отладочный вывод FormData
+    console.log('📋 FormData contents:');
+    for (let [key, value] of formDataObj.entries()) {
+      if (value instanceof File) {
+        console.log(`  ${key}: File(${value.name}, ${value.size} bytes)`);
+      } else {
+        console.log(`  ${key}: ${value}`);
+      }
     }
     
     onSubmit(formDataObj);
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-xl max-w-4xl mx-auto">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">
-            {isEditing ? 'Редактировать проект' : 'Добавить проект'}
-          </h3>
-          <button
-            onClick={onCancel}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
-
-      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+    <div className="space-y-6">
         {/* Основная информация */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -410,10 +418,13 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               Главное изображение
             </label>
             <FileUpload
-              onFilesSelect={setMainImage}
+              onFileSelect={(file) => setMainImage([file])}
               accept="image/*"
               multiple={false}
               maxFiles={1}
+              maxSize={5}
+              label="Загрузить главное изображение"
+              placeholder="Перетащите изображение сюда или нажмите для выбора"
             />
           </div>
 
@@ -426,6 +437,9 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
               accept="image/*"
               multiple={true}
               maxFiles={10}
+              maxSize={5}
+              label="Загрузить изображения галереи"
+              placeholder="Перетащите изображения сюда или нажмите для выбора"
             />
           </div>
         </div>
@@ -436,17 +450,20 @@ const ProjectForm: React.FC<ProjectFormProps> = ({
             type="button"
             variant="outline"
             onClick={onCancel}
+            disabled={loading}
           >
             Отмена
           </Button>
           <Button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             variant="primary"
+            loading={loading}
+            disabled={loading}
           >
             {isEditing ? 'Сохранить' : 'Добавить'}
           </Button>
         </div>
-      </form>
     </div>
   );
 };

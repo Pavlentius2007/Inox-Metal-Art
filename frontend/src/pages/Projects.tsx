@@ -8,16 +8,12 @@ import {
   Palette,
   Brush,
   ArrowLeft,
-  Award,
   Settings,
   Grid,
   List,
-  Building,
   MapPin,
   Calendar,
-  Users,
-  Target,
-  CheckCircle
+  Users
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 
@@ -53,11 +49,11 @@ const Projects: React.FC = () => {
   // Категории проектов
   const categories = [
     { id: 'all', name: 'Все проекты', icon: Grid },
-    { id: 'exterior', name: 'Экстерьер', icon: Building },
+    { id: 'exterior', name: 'Экстерьер', icon: Grid },
     { id: 'interior', name: 'Интерьер', icon: Palette },
     { id: 'elevators', name: 'Лифты', icon: Shield },
     { id: 'art', name: 'Арт-объекты', icon: Brush },
-    { id: 'commercial', name: 'Коммерческие', icon: Building }
+    { id: 'commercial', name: 'Коммерческие', icon: Grid }
   ];
 
   // Загружаем проекты с API
@@ -124,11 +120,7 @@ const Projects: React.FC = () => {
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
                 )}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                    <Building className="w-16 h-16 text-white" />
-                  </div>
-                </div>
+
               </div>
 
               {/* Project Info */}
@@ -391,11 +383,6 @@ const Projects: React.FC = () => {
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
                     )}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                        <Building className="w-10 h-10 text-white" />
-                      </div>
-                    </div>
                   </div>
 
                   {/* Project Info */}
@@ -440,7 +427,12 @@ const Projects: React.FC = () => {
 
                     {/* Actions */}
                     <div className="flex justify-center">
-                      <Button variant="outline" size="sm" fullWidth>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        fullWidth
+                        onClick={() => setSelectedProject(project)}
+                      >
                         <Eye className="w-4 h-4 mr-2" />
                         Подробнее
                       </Button>
@@ -472,11 +464,6 @@ const Projects: React.FC = () => {
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
                       )}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                          <Building className="w-10 h-10 text-white" />
-                        </div>
-                      </div>
                     </div>
 
                     {/* Project Info */}
@@ -534,7 +521,11 @@ const Projects: React.FC = () => {
                               <Download className="w-4 h-4 mr-2" />
                               Скачать кейс
                             </Button>
-                            <Button variant="primary" size="sm">
+                            <Button 
+                              variant="primary" 
+                              size="sm"
+                              onClick={() => setSelectedProject(project)}
+                            >
                               Подробнее
                             </Button>
                           </div>

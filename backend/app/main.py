@@ -21,10 +21,10 @@ app = FastAPI(
 # CORS настройки для разработки
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Разрешаем все источники для разработки
-    allow_credentials=False,  # Отключаем credentials для "*"
-    allow_methods=["*"],  # Разрешаем все методы
-    allow_headers=["*"],  # Разрешаем все заголовки
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 # Подключаем API роутеры
@@ -47,6 +47,7 @@ for upload_dir in upload_dirs:
 
 # Статические файлы
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+app.mount("/Catalog", StaticFiles(directory="Catalog"), name="catalog")
 
 @app.get("/")
 async def root():

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { 
   MapPin as MapPinIcon,
@@ -6,95 +6,29 @@ import {
   PhoneCall,
   Mail as MailIcon,
   MessageCircle as MessageCircleIcon,
-  Send as SendIcon,
-  CheckCircle as CheckCircleIcon2,
-  AlertCircle,
-  Factory,
-  Shield,
-  Globe
+  Factory
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 
 const Contacts: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    company: '',
-    message: '',
-    productInterest: ''
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError('');
-
-    try {
-      // Здесь будет отправка формы на сервер
-      // Пока что симулируем отправку
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setSubmitSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        phone: '',
-        company: '',
-        message: '',
-        productInterest: ''
-      });
-    } catch (error) {
-      setSubmitError('Произошла ошибка при отправке. Попробуйте еще раз.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   const contactInfo = {
     email: 'pavel@inoxmetalart.com',
     phone: '+7 953 862 8581',
     telegram: '@Pavlentius2007',
     whatsapp: '+7 953 862 8581',
-    address: 'Россия, г. Москва',
+    office: {
+      address: '61/271-272 Rama 9 Road, HuayKwang, Bangkok 10310 Thailand',
+      mapLink: 'https://maps.app.goo.gl/NXYcgoUz6vAMFSN66?g_st=aw'
+    },
+    factory: {
+      address: '7RQ3+783, Nong Chumphon, Khao Yoi District, Phetchaburi 76140, Таиланд',
+      mapLink: 'https://maps.app.goo.gl/tXCwNfqSrTMATTvK8'
+    },
     workingHours: 'Пн-Пт: 9:00-18:00 (МСК)'
   };
 
-  // Информация о заводе в Таиланде
-  const factoryInfo = {
-    name: 'HWA LIN STAINLESS STEEL INDUSTRY Co., Ltd.',
-    address: '61/271-272 Rama 9 Road, HuayKwang, HuayKwang, Bangkok 10310 Thailand',
-    addressThai: '6.พระราม 9 แขวงห้วยขวาง เขตห้วยขวาง กรุงเทพมหานคร 10310',
-    phone: '+66 2 246-6675',
-    fax: '+66 2 246-6679',
-    coordinates: {
-      lat: 13.7563, // Примерные координаты Бангкока
-      lng: 100.5018
-    }
-  };
 
-  const productInterests = [
-    'PVD покрытия',
-    'Нанопокрытия',
-    'Патинирование',
-    'Травление узоров',
-    'Рифленые узоры',
-    'Брашировка',
-    'Зеркальная полировка',
-    'Сатинирование',
-    'Другое'
-  ];
 
   return (
     <div className="min-h-screen bg-white pt-32">
@@ -138,167 +72,74 @@ const Contacts: React.FC = () => {
       <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-            {/* Contact Form */}
+            {/* Maps Section */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="bg-white rounded-2xl shadow-xl p-8"
+              className="space-y-8"
             >
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Отправить заявку</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Наши локации</h2>
               
-              {submitSuccess ? (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-12"
+              {/* Office Map */}
+              <div className="bg-white rounded-2xl shadow-xl p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                  <MapPinIcon className="w-6 h-6 text-blue-600 mr-2" />
+                  Офис в Таиланде
+                </h3>
+                <div className="h-64 bg-gray-100 rounded-xl overflow-hidden">
+                  <iframe
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=61/271-272+Rama+9+Road,+HuayKwang,+Bangkok+10310+Thailand&zoom=15"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Офис в Таиланде"
+                  ></iframe>
+                </div>
+                <p className="text-gray-600 mt-3">{contactInfo.office.address}</p>
+                <a 
+                  href={contactInfo.office.mapLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-700 text-sm mt-2 inline-flex items-center"
                 >
-                  <div className="w-20 h-20 bg-green-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                    <CheckCircleIcon2 className="w-10 h-10 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                    Заявка отправлена!
-                  </h3>
-                  <p className="text-gray-600 mb-6">
-                    Мы свяжемся с вами в ближайшее время
-                  </p>
-                  <Button 
-                    variant="primary" 
-                    onClick={() => setSubmitSuccess(false)}
-                  >
-                    Отправить еще одну заявку
-                  </Button>
-                </motion.div>
-              ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                        Имя *
-                      </label>
-                      <input
-                        type="text"
-                        id="name"
-                        name="name"
-                        required
-                        value={formData.name}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                        placeholder="Ваше имя"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                        Email *
-                      </label>
-                      <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        required
-                        value={formData.email}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                        placeholder="your@email.com"
-                      />
-                    </div>
-                  </div>
+                  <MapPinIcon className="w-4 h-4 mr-1" />
+                  Открыть в Google Maps
+                </a>
+              </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                        Телефон
-                      </label>
-                      <input
-                        type="tel"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                        placeholder="+7 (___) ___-__-__"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                        Компания
-                      </label>
-                      <input
-                        type="text"
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                        placeholder="Название компании"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="productInterest" className="block text-sm font-medium text-gray-700 mb-2">
-                      Интересующая продукция
-                    </label>
-                    <select
-                      id="productInterest"
-                      name="productInterest"
-                      value={formData.productInterest}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                    >
-                      <option value="">Выберите продукцию</option>
-                      {productInterests.map((product) => (
-                        <option key={product} value={product}>{product}</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                      Сообщение *
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      required
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 resize-none"
-                      placeholder="Опишите ваш проект или задайте вопрос..."
-                    />
-                  </div>
-
-                  {submitError && (
-                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                      <div className="flex items-center space-x-2">
-                        <AlertCircle className="w-5 h-5 text-red-500" />
-                        <span className="text-red-700">{submitError}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    fullWidth
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                        Отправка...
-                      </>
-                    ) : (
-                      <>
-                        <SendIcon className="w-5 h-5 mr-2" />
-                        Отправить заявку
-                      </>
-                    )}
-                  </Button>
-                </form>
-              )}
+              {/* Factory Map */}
+              <div className="bg-white rounded-2xl shadow-xl p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                  <Factory className="w-6 h-6 text-green-600 mr-2" />
+                  Завод в Таиланде
+                </h3>
+                <div className="h-64 bg-gray-100 rounded-xl overflow-hidden">
+                  <iframe
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=7RQ3+783,+Nong+Chumphon,+Khao+Yoi+District,+Phetchaburi+76140,+Thailand&zoom=15"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Завод в Таиланде"
+                  ></iframe>
+                </div>
+                <p className="text-gray-600 mt-3">{contactInfo.factory.address}</p>
+                <a 
+                  href={contactInfo.factory.mapLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-700 text-sm mt-2 inline-flex items-center"
+                >
+                  <MapPinIcon className="w-4 h-4 mr-1" />
+                  Открыть в Google Maps
+                </a>
+              </div>
             </motion.div>
 
             {/* Contact Details */}
@@ -376,19 +217,47 @@ const Contacts: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Address */}
+                {/* Office Address */}
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <MapPinIcon className="w-6 h-6 text-gray-600" />
+                  <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <MapPinIcon className="w-6 h-6 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Адрес</h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Офис в Таиланде</h3>
                     <p className="text-gray-600 text-lg">
-                      {contactInfo.address}
+                      {contactInfo.office.address}
                     </p>
-                    <p className="text-gray-600 text-sm mt-1">
-                      Работаем по всей России
+                    <a 
+                      href={contactInfo.office.mapLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-700 transition-colors duration-200 text-sm mt-1 inline-flex items-center"
+                    >
+                      <MapPinIcon className="w-4 h-4 mr-1" />
+                      Посмотреть на карте
+                    </a>
+                  </div>
+                </div>
+
+                {/* Factory Address */}
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Factory className="w-6 h-6 text-green-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-1">Завод в Таиланде</h3>
+                    <p className="text-gray-600 text-lg">
+                      {contactInfo.factory.address}
                     </p>
+                    <a 
+                      href={contactInfo.factory.mapLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-700 transition-colors duration-200 text-sm mt-1 inline-flex items-center"
+                    >
+                      <MapPinIcon className="w-4 h-4 mr-1" />
+                      Посмотреть на карте
+                    </a>
                   </div>
                 </div>
 
@@ -409,204 +278,15 @@ const Contacts: React.FC = () => {
                 </div>
               </div>
 
-              {/* Quick Actions */}
-              <div className="bg-blue-50 rounded-2xl p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">Быстрые действия</h3>
-                <div className="space-y-3">
-                  <Button variant="primary" size="sm" fullWidth>
-                    <PhoneCall className="w-4 h-4 mr-2" />
-                    Позвонить сейчас
-                  </Button>
-                  <Button variant="outline" size="sm" fullWidth>
-                    <MessageCircleIcon className="w-4 h-4 mr-2" />
-                    Написать в WhatsApp
-                  </Button>
-                  <Button variant="outline" size="sm" fullWidth>
-                    <MessageCircleIcon className="w-4 h-4 mr-2" />
-                    Написать в Telegram
-                  </Button>
-                </div>
-              </div>
+
             </motion.div>
 
-            {/* Factory Location Map */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="mt-12"
-            >
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">Расположение завода</h2>
-              <p className="text-lg text-gray-600 mb-8">
-                Наш основной производственный завод находится в Таиланде, где мы производим высококачественную 
-                нержавеющую сталь с использованием японских технологий и сырья Nisshin.
-              </p>
-              
-              {/* Factory Info Card */}
-              <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900 mb-4">{factoryInfo.name}</h3>
-                    <div className="space-y-3">
-                      <div className="flex items-start space-x-3">
-                        <MapPinIcon className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
-                        <div>
-                          <p className="text-gray-900 font-medium">{factoryInfo.address}</p>
-                          <p className="text-gray-600 text-sm mt-1">{factoryInfo.addressThai}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <PhoneCall className="w-5 h-5 text-green-600" />
-                        <a href={`tel:${factoryInfo.phone}`} className="text-gray-900 hover:text-blue-600 transition-colors">
-                          {factoryInfo.phone}
-                        </a>
-                      </div>
-                      <div className="flex items-center space-x-3">
-                        <MailIcon className="w-5 h-5 text-blue-600" />
-                        <span className="text-gray-900">Факс: {factoryInfo.fax}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Google Maps Embed */}
-                  <div className="h-64 md:h-full rounded-xl overflow-hidden">
-                    <iframe
-                      title="Расположение завода HWA LIN в Бангкоке"
-                      src={`https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8&q=${factoryInfo.coordinates.lat},${factoryInfo.coordinates.lng}&zoom=15`}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      allowFullScreen
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                      className="rounded-xl"
-                    />
-                  </div>
-                </div>
-              </div>
 
-              {/* Additional Factory Info */}
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-blue-50 rounded-xl p-6 text-center">
-                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Factory className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Производство</h4>
-                  <p className="text-gray-600 text-sm">
-                    Современное оборудование и японские технологии для производства премиальной нержавеющей стали
-                  </p>
-                </div>
-                
-                <div className="bg-green-50 rounded-xl p-6 text-center">
-                  <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Shield className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Качество</h4>
-                  <p className="text-gray-600 text-sm">
-                    Сырье Nisshin и строгий контроль качества на всех этапах производства
-                  </p>
-                </div>
-                
-                <div className="bg-orange-50 rounded-xl p-6 text-center">
-                  <div className="w-16 h-16 bg-orange-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Globe className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Логистика</h4>
-                  <p className="text-gray-600 text-sm">
-                    Отлаженная система поставок по всему миру с основного склада в Таиланде
-                  </p>
-                </div>
-              </div>
-            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Часто задаваемые вопросы
-            </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Ответы на популярные вопросы о нашей продукции и услугах
-            </p>
-          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 rounded-2xl p-6"
-            >
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                Как заказать образцы продукции?
-              </h3>
-              <p className="text-gray-600">
-                Отправьте заявку через форму на этой странице или свяжитесь с нами по телефону. 
-                Мы отправим образцы бесплатно в течение 2-3 рабочих дней.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 rounded-2xl p-6"
-            >
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                Какие сроки выполнения заказов?
-              </h3>
-              <p className="text-gray-600">
-                Стандартные заказы выполняются в течение 7-14 дней. 
-                Срочные заказы - по договоренности. Всегда уточняем сроки при оформлении.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 rounded-2xl p-6"
-            >
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                Работаете ли вы по всей России?
-              </h3>
-              <p className="text-gray-600">
-                Да, мы работаем по всей России. Доставляем продукцию в любой регион. 
-                Стоимость доставки рассчитывается индивидуально.
-              </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="bg-gray-50 rounded-2xl p-6"
-            >
-              <h3 className="text-xl font-bold text-gray-900 mb-3">
-                Предоставляете ли техническую поддержку?
-              </h3>
-              <p className="text-gray-600">
-                Конечно! Наши технологи консультируют по всем вопросам применения продукции, 
-                монтажа и ухода за декоративной нержавеющей сталью.
-              </p>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* CTA Section */}
       <section className="py-20 bg-gradient-to-br from-blue-900 to-blue-800">

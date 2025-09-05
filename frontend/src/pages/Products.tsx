@@ -12,9 +12,7 @@ import {
   Sparkles,
   Layers,
   Brush,
-  FileText,
   ArrowLeft,
-  Clock,
   Award,
   Globe,
   TestTube,
@@ -24,38 +22,20 @@ import {
 import Button from '../components/ui/Button';
 
 interface Product {
-  id: string;
+  id: number;
   name: string;
   category: string;
   description: string;
-  specifications: {
-    type: string;
-    thickness?: string;
-    hardness?: string;
-    colors?: string;
-    scratch_resistance?: string;
-    effect?: string;
-    maintenance?: string;
-    eco?: string;
-    roughness?: string;
-    quality?: string;
-    reflection?: string;
-    texture?: string;
-  };
-  features: string[];
-  image: string;
-  price: string;
-  detailed: {
-    technology: string;
-    types?: string[];
-    colors?: string[];
-    testing?: string;
-    quality?: string;
-    experience?: string;
-    benefits?: string[];
-    applications?: string[];
-    features?: string[];
-  };
+  specifications?: string;
+  features?: string;
+  image_path?: string;
+  images?: string[];
+  videos?: string[];
+  price?: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  detailed?: string;
 }
 
 const Products: React.FC = () => {
@@ -66,38 +46,85 @@ const Products: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
 
-  // Упрощенные категории - только основные
+  // Категории продукции на основе InoxMetalArt
   const categories = [
     { id: 'all', name: 'Все', icon: Filter },
     { id: 'pvd-coatings', name: 'PVD покрытия', icon: Sparkles },
     { id: 'base-finishes', name: 'Базовые отделки', icon: Layers },
-    { id: 'art-finishes', name: 'Художественные', icon: Brush }
+    { id: 'patina-finishes', name: 'Патина', icon: Palette },
+    { id: 'nsr-coatings', name: 'NSR™ покрытия', icon: Shield },
+    { id: 'art-brush', name: 'Art Brush™', icon: Brush },
+    { id: 'nas-coatings', name: 'NAS™ покрытия', icon: TestTube },
+    { id: 'etched-designs', name: 'Травленые дизайны', icon: Settings },
+    { id: 'embossed-patterns', name: 'Тисненые узоры', icon: Globe },
+    { id: 'press-plates', name: 'Press Plates™', icon: Award },
+    { id: 'quilted-sheets', name: 'Стеганые листы', icon: Layers },
+    { id: 'expanded-sheets', name: 'Перфорированные листы', icon: Settings },
+    { id: 'raised-patterns', name: 'Рельефные узоры', icon: Globe },
+    { id: 'pure-titanium', name: 'Чистый титан', icon: Star },
+    { id: 'duplex-steel', name: 'Дуплексная сталь', icon: Shield }
   ];
 
-  // Загрузка продуктов с API
+  // Загрузка продуктов из API
   useEffect(() => {
-    const fetchProducts = async () => {
+    const loadProducts = async () => {
+      setLoading(true);
+      setError('');
+      
       try {
-        setLoading(true);
-        setError('');
-        
+        console.log('Загружаем продукты из API...');
         const response = await fetch('http://localhost:8000/api/v1/products/');
-        if (!response.ok) {
-          throw new Error('Ошибка при загрузке продуктов');
-        }
+        console.log('Ответ API:', response.status, response.statusText);
         
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
         const data = await response.json();
+        console.log('Данные продуктов:', data);
         setProducts(data.products || []);
       } catch (err) {
         console.error('Ошибка загрузки продуктов:', err);
-        setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
-        setProducts([]); // Пустой массив вместо моковых данных
+        setError(err instanceof Error ? err.message : 'Ошибка загрузки');
+        
+        // Fallback к моковым данным при ошибке
+        const mockProducts: Product[] = [
+          {
+            id: 1,
+            name: 'PVD (Титановое) покрытие',
+            category: 'pvd-coatings',
+            description: 'Листы с титановым покрытием PVD. Цвета: Медь, Серебристо-серый, Никель-серебро, Никель-бронза, Золото, Розовое золото, Белое золото, Шампань, Бронза, Латунь, Синий, Черный, индивидуальные цвета',
+            specifications: 'Тип: PVD Coating, Толщина: 0.5 – 2.0mm, Цвета: Copper / Silver Grey / Nickel Silver / Nickel Bronze / Gold / Rose Gold / White Gold / Champagne / Bronze / Brass / Blue / Black, custom colors, Качество: AISI 304 / 316, Ширина: 1,220mm./1524mm., Длина: 2,440mm.- 4000mm.',
+            features: 'Высокая коррозионная стойкость, Устойчивость к царапинам, Широкий выбор цветов, Долговечность покрытия, Индивидуальные цвета по запросу',
+            image_path: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop',
+            price: 'По запросу',
+            status: 'active',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+            detailed: 'Физическое осаждение из паровой фазы (PVD). 1000-часовая солевая камера. Соответствие международным стандартам. Применение: Фасады, Интерьеры, Лифты, Мебель. Преимущества: Антикоррозийность, Износостойкость, Эстетичность'
+          },
+          {
+            id: 2,
+            name: 'NSR™ (Нано-защита от царапин)',
+            category: 'nsr-coatings',
+            description: 'Нано-покрытие NSR™ - защита от царапин и износа, увеличение твердости в 3-4 раза',
+            specifications: 'Тип: Nano Scratch Resistant, Толщина: 0.8 – 3.0mm, Качество: AISI 304/316L, Защита от царапин: 3-4 раза увеличение твердости, Твердость: 578 HV, Ширина: 1219mm,(4′) – 1524mm(5′), Длина: 2440mm. — 4000mm.',
+            features: 'Защита от царапин, Увеличение твердости в 3-4 раза, Долговечность покрытия, Идеально для лифтов и мебели',
+            image_path: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=800&h=600&fit=crop',
+            price: 'По запросу',
+            status: 'active',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-01-01T00:00:00Z',
+            detailed: 'Нано-покрытие с повышенной твердостью. Применение: Лифты, Мебель, Столешницы. Преимущества: Защита от царапин, Повышенная твердость, Долговечность'
+          }
+        ];
+        
+        setProducts(mockProducts);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
+    loadProducts();
   }, []);
 
   // Состояния загрузки и ошибки
@@ -166,10 +193,23 @@ const Products: React.FC = () => {
               className="space-y-6"
             >
               <div className="h-96 bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                    <Palette className="w-16 h-16 text-white" />
+                {selectedProduct.image_path ? (
+                  <img
+                    src={`http://localhost:8000/${selectedProduct.image_path}`}
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent" style={{ display: selectedProduct.image_path ? 'none' : 'flex' }}>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-32 h-32 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
+                      <Palette className="w-16 h-16 text-white" />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -178,7 +218,7 @@ const Products: React.FC = () => {
               <div className="bg-gray-50 p-6 rounded-xl">
                 <h2 className="text-2xl font-bold text-gray-900 mb-4">{selectedProduct.name}</h2>
                 <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
-                <div className="text-3xl font-bold text-blue-600 mb-4">{selectedProduct.price}</div>
+                <div className="text-3xl font-bold text-blue-600 mb-4">{selectedProduct.price || 'По запросу'}</div>
                 <div className="flex space-x-4">
                   <Button variant="primary" size="lg" fullWidth>
                     <Download className="w-5 h-5 mr-2" />
@@ -199,100 +239,80 @@ const Products: React.FC = () => {
               className="space-y-8"
             >
               {/* Technology */}
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                  <Settings className="w-6 h-6 mr-2 text-blue-600" />
-                  Технология
-                </h3>
-                <p className="text-gray-600 leading-relaxed">{selectedProduct.detailed.technology}</p>
-              </div>
-
-              {/* Benefits */}
-              {selectedProduct.detailed.benefits && (
+              {selectedProduct.detailed && (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <Award className="w-6 h-6 mr-2 text-blue-600" />
-                    Преимущества
+                    <Settings className="w-6 h-6 mr-2 text-blue-600" />
+                    Детальная информация
                   </h3>
-                  <ul className="space-y-2">
-                    {selectedProduct.detailed.benefits.map((benefit: string, idx: number) => (
-                      <li key={idx} className="flex items-start space-x-2">
-                        <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-600">{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Applications */}
-              {selectedProduct.detailed.applications && (
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <Globe className="w-6 h-6 mr-2 text-blue-600" />
-                    Применение
-                  </h3>
-                  <ul className="space-y-2">
-                    {selectedProduct.detailed.applications.map((application: string, idx: number) => (
-                      <li key={idx} className="flex items-start space-x-2">
-                        <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-600">{application}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="text-gray-600 leading-relaxed">{selectedProduct.detailed}</p>
                 </div>
               )}
 
               {/* Features */}
-              {selectedProduct.detailed.features && (
+              {selectedProduct.features && (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <Star className="w-6 h-6 mr-2 text-blue-600" />
                     Особенности
                   </h3>
                   <ul className="space-y-2">
-                    {selectedProduct.detailed.features.map((feature: string, idx: number) => (
+                    {selectedProduct.features.split(',').map((feature: string, idx: number) => (
                       <li key={idx} className="flex items-start space-x-2">
                         <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                        <span className="text-gray-600">{feature}</span>
+                        <span className="text-gray-600">{feature.trim()}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
 
-              {/* Testing */}
-              {selectedProduct.detailed.testing && (
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <TestTube className="w-6 h-6 mr-2 text-blue-600" />
-                    Тестирование
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">{selectedProduct.detailed.testing}</p>
-                </div>
-              )}
-
-              {/* Quality */}
-              {selectedProduct.detailed.quality && (
+              {/* Specifications */}
+              {selectedProduct.specifications && (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                     <Shield className="w-6 h-6 mr-2 text-blue-600" />
-                    Качество
+                    Технические характеристики
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">{selectedProduct.detailed.quality}</p>
+                  <p className="text-gray-600 leading-relaxed">{selectedProduct.specifications}</p>
                 </div>
               )}
 
-              {/* Experience */}
-              {selectedProduct.detailed.experience && (
+              {/* Media Files */}
+              {(selectedProduct.images && selectedProduct.images.length > 0) || (selectedProduct.videos && selectedProduct.videos.length > 0) ? (
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                    <Clock className="w-6 h-6 mr-2 text-blue-600" />
-                    Опыт применения
+                    <Globe className="w-6 h-6 mr-2 text-blue-600" />
+                    Медиа файлы
                   </h3>
-                  <p className="text-gray-600 leading-relaxed">{selectedProduct.detailed.experience}</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    {selectedProduct.images && selectedProduct.images.map((image, idx) => (
+                      <div key={idx} className="relative">
+                        <img
+                          src={`http://localhost:8000/${image}`}
+                          alt={`${selectedProduct.name} - изображение ${idx + 1}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 rounded text-xs">
+                          Фото {idx + 1}
+                        </div>
+                      </div>
+                    ))}
+                    {selectedProduct.videos && selectedProduct.videos.map((video, idx) => (
+                      <div key={idx} className="relative">
+                        <video
+                          src={`http://localhost:8000/${video}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                          controls
+                        />
+                        <div className="absolute top-2 right-2 bg-purple-500 text-white px-2 py-1 rounded text-xs">
+                          Видео {idx + 1}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              )}
+              ) : null}
             </motion.div>
           </div>
         </div>
@@ -380,11 +400,38 @@ const Products: React.FC = () => {
             >
               {/* Product Image */}
               <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                    <Palette className="w-10 h-10 text-white" />
+                {product.image_path ? (
+                  <img
+                    src={`http://localhost:8000/${product.image_path}`}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent" style={{ display: product.image_path ? 'none' : 'flex' }}>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
+                      <Palette className="w-10 h-10 text-white" />
+                    </div>
                   </div>
+                </div>
+                
+                {/* Media badges */}
+                <div className="absolute bottom-3 left-3 flex space-x-2">
+                  {product.images && product.images.length > 0 && (
+                    <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      +{product.images.length} фото
+                    </div>
+                  )}
+                  {product.videos && product.videos.length > 0 && (
+                    <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      +{product.videos.length} видео
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -394,25 +441,27 @@ const Products: React.FC = () => {
                   <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
                     {categories.find(c => c.id === product.category)?.name || product.category}
                   </span>
-                  <div className="text-2xl font-bold text-blue-600">{product.price}</div>
+                  <div className="text-2xl font-bold text-blue-600">{product.price || 'По запросу'}</div>
                 </div>
 
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{product.name}</h3>
                 <p className="text-gray-600 mb-4 line-clamp-2">{product.description}</p>
 
                 {/* Features */}
-                <div className="mb-4">
-                  <div className="flex flex-wrap gap-2">
-                    {product.features.slice(0, 3).map((feature, idx) => (
-                      <span
-                        key={idx}
-                        className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
-                      >
-                        {feature}
-                      </span>
-                    ))}
+                {product.features && (
+                  <div className="mb-4">
+                    <div className="flex flex-wrap gap-2">
+                      {product.features.split(',').slice(0, 3).map((feature, idx) => (
+                        <span
+                          key={idx}
+                          className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full"
+                        >
+                          {feature.trim()}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex space-x-3">

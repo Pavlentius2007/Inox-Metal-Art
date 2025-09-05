@@ -106,7 +106,7 @@ const Modal: React.FC<ModalProps> = ({
         {/* Modal Content */}
         <motion.div
           className={cn(
-            'relative bg-white rounded-2xl shadow-2xl w-full',
+            'relative bg-white rounded-2xl shadow-2xl w-full max-h-[90vh] flex flex-col',
             sizeClasses[size],
             className
           )}
@@ -115,7 +115,7 @@ const Modal: React.FC<ModalProps> = ({
         >
           {/* Header */}
           {(title || showCloseButton) && (
-            <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200">
+            <div className="flex items-center justify-between p-6 pb-4 border-b border-gray-200 flex-shrink-0">
               {title && (
                 <h2 className="text-xl font-semibold text-gray-900">
                   {title}
@@ -136,7 +136,7 @@ const Modal: React.FC<ModalProps> = ({
           )}
 
           {/* Body */}
-          <div className="p-6">
+          <div className="p-6 overflow-y-auto flex-1 custom-scrollbar">
             {children}
           </div>
         </motion.div>

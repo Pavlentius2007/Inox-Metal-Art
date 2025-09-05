@@ -4,10 +4,12 @@ import { Upload, X, File, Image, Video, FileText } from 'lucide-react';
 import Button from './Button';
 
 interface FileUploadProps {
-  onFileSelect: (file: File) => void;
+  onFileSelect?: (file: File) => void;
+  onFilesSelect?: (files: File[]) => void;
   accept?: string;
   multiple?: boolean;
   maxSize?: number; // в МБ
+  maxFiles?: number;
   className?: string;
   label?: string;
   placeholder?: string;
@@ -15,9 +17,11 @@ interface FileUploadProps {
 
 const FileUpload: React.FC<FileUploadProps> = ({
   onFileSelect,
+  onFilesSelect,
   accept = "*/*",
   multiple = false,
   maxSize = 10, // 10 МБ по умолчанию
+  maxFiles = 10,
   className = "",
   label = "Загрузить файл",
   placeholder = "Перетащите файл сюда или нажмите для выбора"
@@ -65,6 +69,12 @@ const FileUpload: React.FC<FileUploadProps> = ({
     setError("");
     const newFiles: File[] = [];
     
+    // Проверяем лимит файлов
+    if (multiple && selectedFiles.length + files.length > maxFiles) {
+      setError(`Максимальное количество файлов: ${maxFiles}`);
+      return;
+    }
+    
     Array.from(files).forEach(file => {
       const validationError = validateFile(file);
       if (validationError) {
@@ -76,11 +86,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
 
     if (newFiles.length > 0) {
       if (multiple) {
-        setSelectedFiles(prev => [...prev, ...newFiles]);
-        newFiles.forEach(file => onFileSelect(file));
+        const updatedFiles = [...selectedFiles, ...newFiles];
+        setSelectedFiles(updatedFiles);
+        console.log('🖼️ FileUpload (multiple): Calling onFilesSelect with files:', updatedFiles);
+        onFilesSelect?.(updatedFiles);
       } else {
         setSelectedFiles([newFiles[0]]);
-        onFileSelect(newFiles[0]);
+        console.log('📁 FileUpload (single): Calling onFileSelect with file:', newFiles[0]);
+        onFileSelect?.(newFiles[0]);
       }
     }
   };
@@ -112,7 +125,15 @@ const FileUpload: React.FC<FileUploadProps> = ({
   };
 
   const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+    console.log('🗑️ FileUpload: Removing file, updated files:', updatedFiles);
+    
+    if (multiple) {
+      onFilesSelect?.(updatedFiles);
+    } else if (updatedFiles.length === 0) {
+      onFileSelect?.(new File([], ''));
+    }
   };
 
   const getFileIcon = (file: File) => {

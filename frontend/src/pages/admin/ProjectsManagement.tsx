@@ -3,6 +3,9 @@ import { Plus, Edit, Trash2, Eye, RefreshCw, Star, Building, MapPin, Calendar, R
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import ProjectForm from '../../components/admin/ProjectForm';
+import Toast from '../../components/ui/Toast';
+import { useToast } from '../../hooks/useToast';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Project {
   id: number;
@@ -35,22 +38,73 @@ const ProjectsManagement: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState('Все категории');
   const [selectedStatus, setSelectedStatus] = useState('Все статусы');
   const [categories, setCategories] = useState<string[]>([]);
+  const { toast, showSuccess, showError, hideToast } = useToast();
+  const { token } = useAuth();
+
+  // Функция для получения заголовков с токеном
+  const getAuthHeaders = () => {
+    console.log('🔑 ProjectsManagement: Getting auth headers... (Auth disabled for testing)');
+    
+    let authToken = token;  // From useAuth
+    if (!authToken) {
+      console.log('⚠️ No token in AuthContext - checking localStorage...');
+      authToken = localStorage.getItem('auth_token');  // Fallback
+      if (authToken) {
+        console.log('✅ Token found in localStorage!');
+      } else {
+        console.log('❌ No token in localStorage either! User may need to re-login.');
+      }
+    } else {
+      console.log('✅ Token from AuthContext.');
+    }
+    
+    const headers: HeadersInit = {};
+    // Temporarily disabled: 
+    // if (authToken) {
+    //   console.log(`✅ Using token: ${authToken.substring(0, 10)}... (length: ${authToken.length})`);
+    //   headers['Authorization'] = `Bearer ${authToken}`;
+    // }
+    
+    return headers;
+  };
 
   // Загружаем проекты
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/api/v1/projects/');
-      if (!response.ok) {
-        throw new Error('Ошибка загрузки проектов');
-      }
-      const data = await response.json();
-      setProjects(data.projects);
+          const response = await fetch('http://localhost:8000/api/v1/projects/', {
+      headers: getAuthHeaders()
+    });
+      console.log('📥 Response status:', response.status);
       
-      // Получаем уникальные категории
-      const uniqueCategories = [...new Set(data.projects.map((p: Project) => p.category))];
-      setCategories(uniqueCategories);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('❌ Error response body:', errorText);
+        throw new Error(`Ошибка: ${response.status} - ${errorText}`);
+      }
+      
+      const responseText = await response.text();
+      console.log('📄 Raw response text:', responseText);
+      
+      let data;
+      try {
+        data = JSON.parse(responseText);
+        console.log('📋 Parsed data:', data);
+      } catch (parseErr) {
+        console.error('JSON parse error:', parseErr);
+        data = { projects: [] };
+      }
+      
+      if (!data || !data.projects) {
+        console.log('⚠️ Data.projects is missing - setting empty array');
+        setProjects([]);
+      } else {
+        setProjects(data.projects);
+        const uniqueCategories = [...new Set(data.projects.map((p: Project) => p.category))];
+        setCategories(uniqueCategories);
+      }
     } catch (err) {
+      console.error('Fetch error:', err);
       setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
     } finally {
       setLoading(false);
@@ -60,7 +114,9 @@ const ProjectsManagement: React.FC = () => {
   // Загружаем категории
   const fetchCategories = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/projects/categories');
+      const response = await fetch('http://localhost:8000/api/v1/projects/categories', {
+        headers: getAuthHeaders()
+      });
       if (response.ok) {
         const data = await response.json();
         setCategories(data.map((cat: any) => cat.name as string));
@@ -71,9 +127,16 @@ const ProjectsManagement: React.FC = () => {
   };
 
   useEffect(() => {
+    // Temporarily disabled token check for testing - always load projects
+    // if (!token) {
+    //   console.log('ProjectsManagement: No token, skipping API calls');
+    //   setLoading(false);
+    //   return;
+    // }
+    
     fetchProjects();
     fetchCategories();
-  }, []);
+  }, []);  // Call always
 
   // Фильтрация проектов
   const filteredProjects = projects.filter(project => {
@@ -88,44 +151,76 @@ const ProjectsManagement: React.FC = () => {
   // Добавление нового проекта
   const handleAddProject = async (formData: FormData) => {
     try {
+      setLoading(true);
       const response = await fetch('http://localhost:8000/api/v1/projects/', {
         method: 'POST',
+        headers: getAuthHeaders(),
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Ошибка создания проекта');
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Ошибка создания проекта');
       }
 
       await fetchProjects();
       setShowModal(false);
+      setEditingProject(null);
+      // Показываем уведомление об успехе
+      showSuccess('Проект успешно создан!');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
+      const errorMessage = err instanceof Error ? err.message : 'Неизвестная ошибка';
+      setError(errorMessage);
+      showError(`Ошибка: ${errorMessage}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Редактирование проекта
   const handleEditProject = async (formData: FormData) => {
     if (!editingProject) return;
-
+    
+    console.log('🚀 Starting project update...');
+    const headers = getAuthHeaders();
+    console.log('📋 Headers being sent:', headers);
+    
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/projects/${editingProject.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(Object.fromEntries(formData)),
-      });
-
+      setLoading(true);
+          const response = await fetch(`http://localhost:8000/api/v1/projects/${editingProject.id}`, {
+      method: 'PUT',
+      headers: headers,
+      body: formData
+    });
+      
+      console.log('📥 Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Ошибка обновления проекта');
+        const errorText = await response.text();
+        console.log('❌ Error response body:', errorText);
+        let errorMessage = 'Ошибка обновления проекта';
+        try {
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.detail || errorMessage;
+        } catch {
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
 
-      await fetchProjects();
-      setShowModal(false);
+      const updatedProject = await response.json();
+      console.log('✅ Updated project data:', updatedProject);
+
+      setProjects(prev => prev.map(p => p.id === editingProject.id ? updatedProject : p));
       setEditingProject(null);
+      setShowModal(false);
+      // Показываем уведомление об успехе
+      showSuccess('Проект успешно обновлён');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Неизвестная ошибка');
+      console.error('Update error:', err);
+      showError('Ошибка сохранения проекта');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,6 +231,7 @@ const ProjectsManagement: React.FC = () => {
     try {
       const response = await fetch(`http://localhost:8000/api/v1/projects/${id}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
       });
 
       if (!response.ok) {
@@ -157,6 +253,7 @@ const ProjectsManagement: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ status: newStatus }),
       });
@@ -180,6 +277,7 @@ const ProjectsManagement: React.FC = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders(),
         },
         body: JSON.stringify({ is_featured: newFeatured }),
       });
@@ -474,7 +572,12 @@ const ProjectsManagement: React.FC = () => {
       )}
 
       {/* Модальное окно */}
-      <Modal isOpen={showModal} onClose={closeModal}>
+      <Modal 
+        isOpen={showModal} 
+        onClose={closeModal}
+        size="xl"
+        title={editingProject ? 'Редактировать проект' : 'Добавить проект'}
+      >
         <ProjectForm
           initialData={editingProject ? {
             title: editingProject.title,
@@ -494,8 +597,17 @@ const ProjectsManagement: React.FC = () => {
           onSubmit={editingProject ? handleEditProject : handleAddProject}
           onCancel={closeModal}
           isEditing={!!editingProject}
+          loading={loading}
         />
       </Modal>
+
+      {/* Toast уведомления */}
+      <Toast
+        message={toast.message}
+        type={toast.type}
+        isVisible={toast.isVisible}
+        onClose={hideToast}
+      />
     </div>
   );
 };

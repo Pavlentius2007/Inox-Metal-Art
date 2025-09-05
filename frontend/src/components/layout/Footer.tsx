@@ -10,10 +10,14 @@ import {
   ArrowRight
 } from 'lucide-react';
 import Button from '../ui/Button';
+import LegalModal from '../modals/LegalModal';
+import { useLegalModal } from '../../hooks/useLegalModal';
+import { legalDocuments } from '../../data/legalDocuments';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const [email, setEmail] = useState('');
+  const { isOpen, currentDocument, openModal, closeModal } = useLegalModal();
   
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +36,14 @@ const Footer: React.FC = () => {
     phone: '+7 953 862 8581',
     whatsapp: '+7 953 862 8581',
     telegram: '@Pavlentius2007',
-    address: 'Россия, г. Москва',
+    office: {
+      address: '61/271-272 Rama 9 Road, HuayKwang, Bangkok 10310 Thailand',
+      mapLink: 'https://maps.app.goo.gl/NXYcgoUz6vAMFSN66?g_st=aw'
+    },
+    factory: {
+      address: '7RQ3+783, Nong Chumphon, Khao Yoi District, Phetchaburi 76140, Таиланд',
+      mapLink: 'https://maps.app.goo.gl/tXCwNfqSrTMATTvK8'
+    },
     workingHours: 'Пн-Пт: 9:00-18:00 (МСК)'
   };
 
@@ -101,23 +112,23 @@ const Footer: React.FC = () => {
               {/* Logo */}
               <div className="flex items-center space-x-4 mb-6">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center shadow-lg">
-                  <span className="text-white font-bold text-2xl">ИМ</span>
+                  <span className="text-white font-bold text-2xl">IM</span>
                 </div>
                 <div>
                   <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">
-                    Инокс Металл Арт
+                    INOX METAL ART
                   </h3>
                   <p className="text-blue-600 font-medium text-sm lg:text-base">
-                    Премиальная нержавеющая сталь
+                    By HWA LIN Stainless Steel
                   </p>
                 </div>
               </div>
 
               {/* Description */}
               <p className="text-gray-700 leading-relaxed mb-6 lg:mb-8 max-w-lg text-sm lg:text-base font-medium">
-                Ведущий поставщик высококачественной нержавеющей стали для промышленности, 
-                строительства и дизайна. Специализируемся на ПВД покрытиях, нанопокрытиях 
-                и художественных отделках.
+                Leading supplier of high-quality stainless steel for industry, 
+                construction and design. Specializing in PVD coatings, nano-coatings 
+                and artistic finishes. Part of HWA LIN Stainless Steel manufacturing group.
               </p>
 
 
@@ -153,6 +164,7 @@ const Footer: React.FC = () => {
                   <li>
                     <Link
                       to="/about"
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
                     >
                       <span>О компании</span>
@@ -162,6 +174,7 @@ const Footer: React.FC = () => {
                   <li>
                     <Link
                       to="/products"
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
                     >
                       <span>Каталог продукции</span>
@@ -170,7 +183,18 @@ const Footer: React.FC = () => {
                   </li>
                   <li>
                     <Link
+                      to="/projects"
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                      className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
+                    >
+                      <span>Проекты</span>
+                      <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       to="/materials"
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
                     >
                       <span>Материалы</span>
@@ -179,10 +203,21 @@ const Footer: React.FC = () => {
                   </li>
                   <li>
                     <Link
-                      to="/projects"
+                      to="/faq"
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                       className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
                     >
-                      <span>Проекты</span>
+                      <span>FAQ</span>
+                      <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      to="/contacts"
+                      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                      className="text-gray-700 hover:text-blue-600 transition-colors duration-200 text-base font-medium flex items-center group"
+                    >
+                      <span>Контакты</span>
                       <ArrowRight className="w-4 h-4 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                     </Link>
                   </li>
@@ -203,7 +238,31 @@ const Footer: React.FC = () => {
                   </div>
                   <div className="flex items-center space-x-3">
                     <MapPin className="w-4 h-4 text-blue-600" />
-                    <span className="text-gray-700 font-medium">Россия, г. Москва</span>
+                    <div className="flex flex-col">
+                      <span className="text-gray-700 font-medium">Офис в Таиланде: {contactInfo.office.address}</span>
+                      <a 
+                        href={contactInfo.office.mapLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 text-sm transition-colors duration-200"
+                      >
+                        Посмотреть на карте
+                      </a>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <MapPin className="w-4 h-4 text-green-600" />
+                    <div className="flex flex-col">
+                      <span className="text-gray-700 font-medium">Завод: {contactInfo.factory.address}</span>
+                      <a 
+                        href={contactInfo.factory.mapLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 hover:text-blue-700 text-sm transition-colors duration-200"
+                      >
+                        Посмотреть на карте
+                      </a>
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -248,50 +307,103 @@ const Footer: React.FC = () => {
         {/* Bottom Footer */}
         <div className="border-t border-gray-200 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
-            <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+            <div className="flex flex-col space-y-4">
               
-              {/* Copyright */}
-              <div className="text-sm text-gray-600 font-medium">
-                © {currentYear} Инокс Металл Арт. Все права защищены.
+              {/* Top Row - Navigation and Back to Top */}
+              <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0">
+                {/* Quick Links */}
+                <div className="flex items-center space-x-4 lg:space-x-6">
+                  <Link 
+                    to="/projects" 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
+                  >
+                    Проекты
+                  </Link>
+                  <Link 
+                    to="/materials" 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
+                  >
+                    Материалы
+                  </Link>
+                  <Link 
+                    to="/faq" 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
+                  >
+                    FAQ
+                  </Link>
+                  <Link 
+                    to="/contacts" 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
+                  >
+                    Контакты
+                  </Link>
+                </div>
+
+                {/* Back to Top */}
+                <motion.button
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="flex items-center space-x-2 transition-colors duration-200 text-sm text-gray-600 hover:text-blue-600 bg-white rounded-lg px-3 py-2 shadow-sm border border-gray-200 font-medium"
+                  aria-label="Вернуться наверх"
+                >
+                  <span>Наверх</span>
+                  <ArrowRight className="w-4 h-4 rotate-[-90deg]" />
+                </motion.button>
               </div>
 
-              {/* Quick Links */}
-              <div className="flex items-center space-x-4 lg:space-x-6">
-                <Link 
-                  to="/materials" 
-                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
-                >
-                  Материалы
-                </Link>
-                <Link 
-                  to="/projects" 
-                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
-                >
-                  Проекты
-                </Link>
-                <Link 
-                  to="/contacts" 
-                  className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
-                >
-                  Контакты
-                </Link>
-              </div>
+              {/* Bottom Row - Legal Links and Copyright */}
+              <div className="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 pt-4 border-t border-gray-200">
+                {/* Copyright */}
+                <div className="text-sm text-gray-600 font-medium">
+                  © {currentYear} INOX METAL ART by HWA LIN Stainless Steel. All rights reserved.
+                </div>
 
-              {/* Back to Top */}
-              <motion.button
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                whileHover={{ scale: 1.05, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center space-x-2 transition-colors duration-200 text-sm text-gray-600 hover:text-blue-600 bg-white rounded-lg px-3 py-2 shadow-sm border border-gray-200 font-medium"
-                aria-label="Вернуться наверх"
-              >
-                <span>Наверх</span>
-                <ArrowRight className="w-4 h-4 rotate-[-90deg]" />
-              </motion.button>
+                {/* Legal Links */}
+                <div className="flex items-center space-x-4 lg:space-x-6">
+                  <button
+                    onClick={() => openModal(legalDocuments.cookies.title, legalDocuments.cookies.content)}
+                    className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
+                  >
+                    Cookies
+                  </button>
+                  <button
+                    onClick={() => openModal(legalDocuments.privacy.title, legalDocuments.privacy.content)}
+                    className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
+                  >
+                    Политика конфиденциальности
+                  </button>
+                  <button
+                    onClick={() => openModal(legalDocuments.terms.title, legalDocuments.terms.content)}
+                    className="text-sm transition-colors duration-200 text-gray-600 hover:text-blue-600 font-medium"
+                  >
+                    Пользовательское соглашение
+                  </button>
+                </div>
+
+                {/* Developer Info */}
+                <div className="text-sm text-gray-500">
+                  Сайт создан <span className="font-medium text-gray-700">Sianoro</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Legal Modal */}
+      {currentDocument && (
+        <LegalModal
+          isOpen={isOpen}
+          onClose={closeModal}
+          title={currentDocument.title}
+          content={currentDocument.content}
+        />
+      )}
     </footer>
   );
 };

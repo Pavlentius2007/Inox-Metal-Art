@@ -13,6 +13,8 @@ interface Product {
     description: string;
     features: string[];
     image_path?: string;
+    images?: string[];
+    videos?: string[];
     status: 'active' | 'inactive';
 }
 
@@ -35,6 +37,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
         description: '',
         features: [''],
         image_path: '',
+        images: [],
+        videos: [],
         status: 'active'
     });
 
@@ -50,6 +54,8 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 description: product.description,
                 features: product.features.length > 0 ? product.features : [''],
                 image_path: product.image_path || '',
+                images: product.images || [],
+                videos: product.videos || [],
                 status: product.status
             });
         }
@@ -136,11 +142,77 @@ const ProductForm: React.FC<ProductFormProps> = ({
         }));
     };
 
-    const handleFileSelect = (file: File) => {
-        // В реальном приложении здесь будет загрузка файла на сервер
-        console.log('Выбран файл:', file);
-        // Пока что просто сохраняем имя файла
-        handleInputChange('image_path', file.name);
+    const handleFileSelect = async (file: File) => {
+        try {
+            // Создаем FormData для загрузки файла
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', 'product');
+
+            // Загружаем файл на сервер
+            const response = await fetch('http://localhost:8000/api/v1/products/upload-image', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('Файл загружен:', result);
+            
+            // Сохраняем путь к загруженному файлу (используем url без префикса)
+            const imagePath = result.url.replace('/uploads/products/', 'uploads/products/');
+            handleInputChange('image_path', imagePath);
+            console.log('Путь к изображению сохранен в форме:', imagePath);
+        } catch (error) {
+            console.error('Ошибка при загрузке файла:', error);
+            alert(`Ошибка при загрузке файла: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+        }
+    };
+
+    const handleMultipleFilesSelect = async (files: FileList, type: 'images' | 'videos') => {
+        try {
+            const formData = new FormData();
+            Array.from(files).forEach(file => {
+                formData.append('files', file);
+            });
+
+            const endpoint = type === 'images' 
+                ? 'http://localhost:8000/api/v1/products/upload-multiple-images'
+                : 'http://localhost:8000/api/v1/products/upload-multiple-videos';
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            console.log('Файлы загружены:', result);
+            
+            // Обновляем соответствующий массив файлов
+            const filePaths = result.uploaded_files.map((file: any) => 
+                file.url.replace('/uploads/products/', 'uploads/products/')
+            );
+            
+            const currentFiles = (formData as any)[type] || [];
+            handleInputChange(type, [...currentFiles, ...filePaths]);
+            console.log(`${type} обновлены:`, [...currentFiles, ...filePaths]);
+        } catch (error) {
+            console.error(`Ошибка при загрузке ${type}:`, error);
+            alert(`Ошибка при загрузке файлов: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
+        }
+    };
+
+    const removeFile = (index: number, type: 'images' | 'videos') => {
+        const currentFiles = (formData as any)[type] || [];
+        const updatedFiles = currentFiles.filter((_: any, i: number) => i !== index);
+        handleInputChange(type, updatedFiles);
     };
 
     return (
@@ -261,10 +333,10 @@ const ProductForm: React.FC<ProductFormProps> = ({
                 )}
             </div>
 
-            {/* Изображение */}
+            {/* Основное изображение */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Изображение продукта
+                    Основное изображение продукта
                 </label>
                 <input
                     type="file"
@@ -278,9 +350,116 @@ const ProductForm: React.FC<ProductFormProps> = ({
                     className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                 />
                 {formData.image_path && (
-                    <p className="mt-2 text-sm text-gray-500">
-                        Выбран файл: {formData.image_path}
-                    </p>
+                    <div className="mt-4">
+                        <p className="text-sm text-gray-500 mb-2">
+                            Основное изображение:
+                        </p>
+                        <img
+                            src={`http://localhost:8000/${formData.image_path}`}
+                            alt="Предварительный просмотр"
+                            className="w-32 h-32 object-cover rounded-lg border border-gray-200"
+                            onLoad={() => {
+                                console.log('Предварительный просмотр загружен:', formData.image_path);
+                            }}
+                            onError={(e) => {
+                                console.error('Ошибка загрузки изображения в форме:', {
+                                    imagePath: formData.image_path,
+                                    fullUrl: `http://localhost:8000/${formData.image_path}`
+                                });
+                                e.currentTarget.style.display = 'none';
+                            }}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Дополнительные изображения */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Дополнительные изображения
+                </label>
+                <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                        const files = e.target.files;
+                        if (files && files.length > 0) {
+                            handleMultipleFilesSelect(files, 'images');
+                        }
+                    }}
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                />
+                {formData.images && formData.images.length > 0 && (
+                    <div className="mt-4">
+                        <p className="text-sm text-gray-500 mb-2">
+                            Дополнительные изображения:
+                        </p>
+                        <div className="grid grid-cols-4 gap-2">
+                            {formData.images.map((image, index) => (
+                                <div key={index} className="relative">
+                                    <img
+                                        src={`http://localhost:8000/${image}`}
+                                        alt={`Дополнительное изображение ${index + 1}`}
+                                        className="w-20 h-20 object-cover rounded-lg border border-gray-200"
+                                        onError={(e) => {
+                                            console.error('Ошибка загрузки дополнительного изображения:', image);
+                                            e.currentTarget.style.display = 'none';
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => removeFile(index, 'images')}
+                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Видео */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Видео файлы
+                </label>
+                <input
+                    type="file"
+                    accept="video/*"
+                    multiple
+                    onChange={(e) => {
+                        const files = e.target.files;
+                        if (files && files.length > 0) {
+                            handleMultipleFilesSelect(files, 'videos');
+                        }
+                    }}
+                    className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100"
+                />
+                {formData.videos && formData.videos.length > 0 && (
+                    <div className="mt-4">
+                        <p className="text-sm text-gray-500 mb-2">
+                            Видео файлы:
+                        </p>
+                        <div className="space-y-2">
+                            {formData.videos.map((video, index) => (
+                                <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded-lg">
+                                    <span className="text-sm text-gray-700 truncate">
+                                        {video.split('/').pop()}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeFile(index, 'videos')}
+                                        className="text-red-500 hover:text-red-700 ml-2"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 )}
             </div>
 
@@ -315,7 +494,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
                     disabled={isSubmitting}
                     className="min-w-[120px]"
                 >
-                    {isSubmitting ? 'Сохранение...' : (product ? 'Обновить' : 'Создать')}
+                    {isSubmitting ? 'Сохранение...' : (product ? 'Сохранить' : 'Создать')}
                 </Button>
             </div>
         </form>

@@ -1,18 +1,12 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
-  Search, 
   Eye,
   Download,
   FileText,
-  Award,
-  Globe,
-  Grid,
-  CheckCircle,
   File,
   FileImage,
   FileSpreadsheet,
-  FileCode,
   X
 } from 'lucide-react';
 import Button from '../components/ui/Button';
@@ -33,101 +27,394 @@ interface Material {
 
 const Materials: React.FC = () => {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isPdfLoading, setIsPdfLoading] = useState(true);
 
-  // Категории материалов
-  const categories = [
-    { id: 'all', name: 'Все материалы', icon: Grid },
-    { id: 'catalogs', name: 'Каталоги продукции', icon: FileText },
-    { id: 'specifications', name: 'Технические характеристики', icon: FileCode },
-    { id: 'certificates', name: 'Сертификаты качества', icon: Award },
-    { id: 'guides', name: 'Руководства по монтажу', icon: FileText },
-    { id: 'brochures', name: 'Брошюры и презентации', icon: FileImage },
-    { id: 'standards', name: 'Стандарты и нормы', icon: FileText }
-  ];
+  // Материалы для скачивания (документы, каталоги, сертификаты) - обновлены на основе реальных файлов
+  const [materials] = useState<Material[]>([
+    // Каталоги продукции
+    {
+      id: 1,
+      name: 'Декоративная нержавеющая сталь',
+      description: 'Полный каталог декоративной нержавеющей стали',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '6.6 MB',
+      download_url: 'http://localhost:8000/Catalog/ИноксМеталАрт - Декоративная Нержавейка.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 234
+    },
+    {
+      id: 2,
+      name: 'PressPlates каталог',
+      description: 'Каталог пресс-форм и 3D узоров',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '3.0 MB',
+      download_url: 'http://localhost:8000/Catalog/PressPlates™.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 89
+    },
+    {
+      id: 3,
+      name: 'Стеганые листы',
+      description: 'Каталог стеганых листов с 3D дизайнами',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.8 MB',
+      download_url: 'http://localhost:8000/Catalog/Quilted.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 67
+    },
+    {
+      id: 4,
+      name: 'Знаковая продукция (5 страниц)',
+      description: 'Каталог продукции для вывесок и указателей',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.2 MB',
+      download_url: 'http://localhost:8000/Catalog/Sign products (5pages).pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 45
+    },
+    {
+      id: 5,
+      name: 'Индивидуальные поручни для лифтов',
+      description: 'Каталог индивидуальных поручней из нержавеющей стали для лифтов',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '777 KB',
+      download_url: 'http://localhost:8000/Catalog/1 Custom made Handrails for Elevators.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 35
+    },
+    {
+      id: 6,
+      name: 'Декоративная нержавеющая сталь (англ.)',
+      description: 'Каталог декоративных решений из нержавеющей стали',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '2.8 MB',
+      download_url: 'http://localhost:8000/Catalog/1 Decorative stainless steel.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 28
+    },
+    {
+      id: 7,
+      name: 'Отделка лифтов нержавеющей сталью',
+      description: 'Каталог отделки лифтов декоративной нержавеющей сталью',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '2.2 MB',
+      download_url: 'http://localhost:8000/Catalog/1 Elevator decoration, stainless steel.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 31
+    },
+    {
+      id: 8,
+      name: 'Наши производственные возможности',
+      description: 'Каталог производственных возможностей компании',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.3 MB',
+      download_url: 'http://localhost:8000/Catalog/Our Fabrication.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 41
+    },
+    {
+      id: 9,
+      name: 'HLS Project References',
+      description: 'Справочник проектов HLS',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.5 MB',
+      download_url: 'http://localhost:8000/Catalog/1 HLS Project References.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 22
+    },
+    {
+      id: 10,
+      name: 'Interior Applications',
+      description: 'Внутренние применения нержавеющей стали',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.1 MB',
+      download_url: 'http://localhost:8000/Catalog/1 Interior Applications.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 18
+    },
+    {
+      id: 11,
+      name: 'Exterior application',
+      description: 'Внешние применения нержавеющей стали',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.4 MB',
+      download_url: 'http://localhost:8000/Catalog/Exterior application.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 25
+    },
+    {
+      id: 12,
+      name: 'Floor Plates (FP)',
+      description: 'Каталог напольных плит',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '800 KB',
+      download_url: 'http://localhost:8000/Catalog/Floor Plates (FP).pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 16
+    },
+    {
+      id: 13,
+      name: 'Hollow Spheres',
+      description: 'Каталог полых сфер',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '600 KB',
+      download_url: 'http://localhost:8000/Catalog/Hollow Spheres.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 12
+    },
+    {
+      id: 14,
+      name: 'Art Etching Designs (preview)',
+      description: 'Превью дизайнов художественного травления',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '900 KB',
+      download_url: 'http://localhost:8000/Catalog/Art Etching Designs (preview).pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 20
+    },
+    {
+      id: 15,
+      name: 'ArtBrush',
+      description: 'Каталог ArtBrush технологий',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.2 MB',
+      download_url: 'http://localhost:8000/Catalog/ArtBrush.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 14
+    },
+    {
+      id: 16,
+      name: 'DesignTrims™',
+      description: 'Каталог декоративных отделок DesignTrims',
+      category: 'catalogs',
+      file_type: 'pdf',
+      file_size: '1.0 MB',
+      download_url: 'http://localhost:8000/Catalog/DesignTrims™.pdf',
+      tags: ['catalogs', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 19
+    },
+    // Сертификаты качества
+    {
+      id: 17,
+      name: 'Material Safety RoHS - NAS coating',
+      description: 'Сертификат безопасности материалов RoHS для NAS покрытия',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '238 KB',
+      download_url: 'http://localhost:8000/Catalog/Material Safety RoHS - NAS coating.pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 58
+    },
+    {
+      id: 18,
+      name: 'Material Safety RoHS - Ti(PVD) coating',
+      description: 'Сертификат безопасности материалов RoHS для Ti(PVD) покрытия',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '381 KB',
+      download_url: 'http://localhost:8000/Catalog/Material Safety RoHS - Ti(PVD) coating (Hwa Lin).pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 15
+    },
+    {
+      id: 19,
+      name: 'Material Safety RoHS - AISI 304 grade',
+      description: 'Сертификат безопасности материалов RoHS для AISI 304',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '320 KB',
+      download_url: 'http://localhost:8000/Catalog/Material Safety RoHS - AISI 304 grade (Hwa Lin).pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 42
+    },
+    {
+      id: 20,
+      name: 'Material Safety RoHS - AISI 316 grade',
+      description: 'Сертификат безопасности материалов RoHS для AISI 316',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '310 KB',
+      download_url: 'http://localhost:8000/Catalog/Material Safety RoHS - AISI 316 grade.pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 38
+    },
+    {
+      id: 21,
+      name: 'Material Safety RoHS - AISI 430 grade',
+      description: 'Сертификат безопасности материалов RoHS для AISI 430',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '290 KB',
+      download_url: 'http://localhost:8000/Catalog/Material Safety RoHS - AISI 430 grade (Hwa Lin).pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 21
+    },
+    {
+      id: 22,
+      name: 'NAS™ Anti-fingerprint coated SS sheets',
+      description: 'Сертификат NAS антипечатного покрытия для нержавеющих листов',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '654 KB',
+      download_url: 'http://localhost:8000/Catalog/NAS™ Anti-fingerprint coated SS sheets.pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 32
+    },
+    {
+      id: 23,
+      name: 'ISO 9001-2015',
+      description: 'Сертификат системы менеджмента качества ISO 9001-2015',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '450 KB',
+      download_url: 'http://localhost:8000/Catalog/ISO 9001-2015 (Valid 23.08.2020).pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 67
+    },
+    {
+      id: 24,
+      name: 'Environmental Management (ISO 14001)',
+      description: 'Сертификат системы экологического менеджмента ISO 14001',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '380 KB',
+      download_url: 'http://localhost:8000/Catalog/Environmental Management (ISO 14001).pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 29
+    },
+    {
+      id: 25,
+      name: 'LEED Green Building Certificate',
+      description: 'Сертификат зеленого строительства LEED',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '520 KB',
+      download_url: 'http://localhost:8000/Catalog/LEED Green Building Certificate.pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 23
+    },
+    {
+      id: 26,
+      name: '1000hrs. Accelerated Salt Spray Test Certificate (PVD coating)',
+      description: 'Сертификат ускоренного солевого тумана 1000 часов для PVD покрытия',
+      category: 'certificates',
+      file_type: 'pdf',
+      file_size: '410 KB',
+      download_url: 'http://localhost:8000/Catalog/1000hrs. Accelerated Salt Spray Test Certificate (PVD coating).pdf',
+      tags: ['certificates', 'PDF'],
+      upload_date: '2023-11-25',
+      downloads: 18
+    },
+    // Технические спецификации
+    {
+      id: 27,
+      name: 'N8 Mirror Surface Scan Test',
+      description: 'Результаты сканирования поверхности N8 Mirror',
+      category: 'specifications',
+      file_type: 'jpg',
+      file_size: '110 KB',
+      download_url: 'http://localhost:8000/Catalog/N8 Mirror Surface Scan Test.jpg',
+      tags: ['specifications', 'JPG'],
+      upload_date: '2023-11-25',
+      downloads: 24
+    },
+    {
+      id: 28,
+      name: 'sNAS coating Anti Microbial test',
+      description: 'Результаты тестирования антимикробных свойств sNAS покрытия',
+      category: 'specifications',
+      file_type: 'jpg',
+      file_size: '181 KB',
+      download_url: 'http://localhost:8000/Catalog/sNAS coating Anti Microbial test.jpg',
+      tags: ['specifications', 'JPG'],
+      upload_date: '2023-11-25',
+      downloads: 19
+    }
+  ]);
 
-  // Материалы для скачивания (пока пустой массив - будет заполняться через API)
-  const [materials, setMaterials] = useState<Material[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const handleViewMaterial = (material: Material) => {
+    setSelectedMaterial(material);
+    setIsPdfLoading(true);
+  };
 
+  const handleCloseModal = () => {
+    setSelectedMaterial(null);
+    setIsPdfLoading(true);
+  };
 
-
-  // Получение материалов с сервера
-  React.useEffect(() => {
-    const fetchMaterials = async () => {
-      setLoading(true);
-      try {
-        const response = await fetch('http://localhost:8000/api/v1/materials/');
-        if (response.ok) {
-          const data = await response.json();
-          setMaterials(data.materials || []);
-        } else {
-          setError('Ошибка загрузки материалов');
-        }
-      } catch (err) {
-        setError('Ошибка соединения с сервером');
-        console.error('Error fetching materials:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchMaterials();
-  }, []);
-
-  // Функция скачивания материала
   const handleDownload = async (material: Material) => {
+    const downloadButton = document.querySelector(`[data-material-id="${material.id}"]`);
+    if (downloadButton) {
+      downloadButton.innerHTML = '<Download className="w-4 h-4 mr-2" />Скачивание...';
+      downloadButton.setAttribute('disabled', 'true');
+    }
+
     try {
-      // Показываем индикатор загрузки
-      const downloadButton = document.querySelector(`[data-material-id="${material.id}"]`);
-      if (downloadButton) {
-        downloadButton.innerHTML = '<div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>';
-        downloadButton.setAttribute('disabled', 'true');
-      }
-
-      // Увеличиваем счетчик скачиваний
-      await fetch(`http://localhost:8000/api/v1/materials/${material.id}/download`, {
-        method: 'POST',
-      });
-
-      // Скачиваем файл
-      const response = await fetch(`http://localhost:8000/uploads/${material.file_path}`);
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = material.name;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        
-        // Обновляем локальное состояние
-        setMaterials(prev => prev.map(m => 
-          m.id === material.id ? { ...m, downloads: m.downloads + 1 } : m
-        ));
-
-        // Показываем уведомление об успехе
-        if (downloadButton) {
-          downloadButton.innerHTML = '<CheckCircle className="w-4 h-4 mx-auto text-green-500" />';
-          setTimeout(() => {
-            if (downloadButton) {
-              downloadButton.innerHTML = '<Download className="w-4 h-4 mr-2" />Скачать';
-              downloadButton.removeAttribute('disabled');
-            }
-          }, 2000);
-        }
-      } else {
+      const response = await fetch(material.download_url);
+      if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = material.name;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      // Восстанавливаем кнопку
+      if (downloadButton) {
+        downloadButton.innerHTML = '<Download className="w-4 h-4 mr-2" />Скачать';
+        downloadButton.removeAttribute('disabled');
       }
     } catch (error) {
       console.error('Ошибка скачивания:', error);
       alert(`Ошибка при скачивании файла: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
       
       // Восстанавливаем кнопку
-      const downloadButton = document.querySelector(`[data-material-id="${material.id}"]`);
       if (downloadButton) {
         downloadButton.innerHTML = '<Download className="w-4 h-4 mr-2" />Скачать';
         downloadButton.removeAttribute('disabled');
@@ -135,347 +422,183 @@ const Materials: React.FC = () => {
     }
   };
 
-  const filteredMaterials = materials.filter(material => {
-    return selectedCategory === 'all' || material.category === selectedCategory;
-  });
+  const filteredMaterials = materials; // Показываем все материалы без фильтрации
 
-  const getFileIcon = (fileType: string) => {
-    switch (fileType.toLowerCase()) {
-      case 'pdf':
-        return FileText;
-      case 'image':
-      case 'jpg':
-      case 'jpeg':
-      case 'png':
-        return FileImage;
-      case 'excel':
-      case 'xlsx':
-      case 'xls':
-        return FileSpreadsheet;
-      case 'doc':
-      case 'docx':
-        return FileText;
-      default:
-        return File;
+  // Группировка материалов по категориям
+  const groupedMaterials = filteredMaterials.reduce((groups, material) => {
+    const category = material.category;
+    if (!groups[category]) {
+      groups[category] = [];
     }
+    groups[category].push(material);
+    return groups;
+  }, {} as Record<string, Material[]>);
+
+  // Названия категорий на русском языке
+  const categoryNames: Record<string, string> = {
+    'catalogs': 'Каталоги продукции',
+    'certificates': 'Сертификаты качества',
+    'specifications': 'Технические спецификации',
+    'designs': 'Дизайн-проекты'
   };
 
-
-
-  // Детальная страница заменена модальным окном ниже
-
   return (
-    <div className="min-h-screen bg-white pt-32">
-      {/* Hero Section */}
-      <section className="relative py-20 overflow-hidden materials-hero">
-        {/* Фото фон */}
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-900 via-blue-800 to-gray-900" style={{
-          backgroundImage: 'url("/images/materials-hero-bg.jpg")',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
-        }}></div>
-        
-        {/* Затемнение поверх фото */}
-        <div className="absolute inset-0 bg-black/50"></div>
-        
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white hero-text">
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-5xl md:text-7xl font-bold mb-6"
-          >
-            Материалы
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-blue-100 max-w-4xl mx-auto"
-          >
-            Полезные материалы и документация для скачивания
-          </motion.p>
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="text-lg text-blue-200 max-w-3xl mx-auto mt-4"
-          >
-            Каталоги, технические характеристики, сертификаты и руководства
-          </motion.p>
+    <div className="min-h-screen bg-white">
+      {/* Заголовок страницы */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Материалы
+            </h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Документы, каталоги и сертификаты для скачивания
+            </p>
+          </div>
         </div>
       </section>
 
-      {/* Categories Filter */}
-      <section className="py-12 bg-gray-50 border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-3 justify-center">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                  selectedCategory === category.id
-                    ? 'bg-blue-600 text-white shadow-lg'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-                }`}
-              >
-                <category.icon className="w-4 h-4" />
-                <span>{category.name}</span>
-              </button>
+      {/* Список материалов */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="space-y-12">
+            {Object.entries(groupedMaterials).map(([category, categoryMaterials]) => (
+              <div key={category}>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  {categoryNames[category] || category}
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {categoryMaterials.map((material) => (
+                    <motion.div
+                      key={material.id}
+                      className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow"
+                      whileHover={{ y: -2 }}
+                    >
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center space-x-2">
+                          {material.file_type === 'pdf' && <FileText className="w-5 h-5 text-red-500" />}
+                          {material.file_type === 'jpg' && <FileImage className="w-5 h-5 text-blue-500" />}
+                          {material.file_type === 'doc' && <File className="w-5 h-5 text-blue-600" />}
+                          {material.file_type === 'xls' && <FileSpreadsheet className="w-5 h-5 text-green-500" />}
+                        </div>
+                        <span className="text-sm text-gray-500">{material.file_size}</span>
+                      </div>
+                      
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                        {material.name}
+                      </h3>
+                      
+                      <p className="text-gray-600 mb-4 text-sm">
+                        {material.description}
+                      </p>
+                      
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        {material.tags.map((tag, index) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-gray-500">
+                          {material.downloads} скачиваний
+                        </span>
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleViewMaterial(material)}
+                            className="flex items-center"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            Просмотр
+                          </Button>
+                          <Button
+                            variant="primary"
+                            size="sm"
+                            onClick={() => handleDownload(material)}
+                            data-material-id={material.id}
+                            className="flex items-center"
+                          >
+                            <Download className="w-4 h-4 mr-2" />
+                            Скачать
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Materials Grid */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {loading ? (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Загрузка материалов...
-              </h3>
-              <p className="text-gray-600">
-                Пожалуйста, подождите
-              </p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 bg-red-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <div className="w-12 h-12 text-red-500">⚠️</div>
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Ошибка загрузки
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {error}
-              </p>
-              <Button onClick={() => window.location.reload()}>
-                Попробовать снова
-              </Button>
-            </div>
-          ) : materials.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <FileText className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Материалы не найдены
-              </h3>
-              <p className="text-gray-600">
-                В данный момент нет доступных материалов для скачивания
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredMaterials.map((material, index) => (
-                <motion.div
-                  key={material.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group border border-gray-100 h-full min-h-[420px] flex flex-col"
-                >
-                  {/* Material Icon */}
-                  <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                     <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-                     <div className="absolute inset-0 flex items-center justify-center">
-                       <div className="w-24 h-24 bg-gradient-to-br from-blue-600 to-blue-800 rounded-full flex items-center justify-center">
-                         {React.createElement(getFileIcon(material.file_type), { className: "w-12 h-12 text-white" })}
-                       </div>
-                     </div>
-                   </div>
-
-                  {/* Material Info */}
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-200 leading-7 min-h-[56px]">
-                      {material.name}
-                    </h3>
-                    <p className="text-gray-600 mb-4 h-12 overflow-hidden">
-                      {material.description}
-                    </p>
-
-                    {/* File Info */}
-                    <div className="space-y-2 mb-4">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Тип:</span>
-                        <span className="text-gray-700 font-medium">{material.file_type.toUpperCase()}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-gray-500">Размер:</span>
-                        <span className="text-gray-700 font-medium">{material.file_size}</span>
-                      </div>
-                      
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex flex-wrap gap-1 mb-4">
-                      {material.tags.slice(0, 3).map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                      {material.tags.length > 3 && (
-                        <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                          +{material.tags.length - 3}
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 mt-auto">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedMaterial(material);
-                        }}
-                        className="flex-1"
-                      >
-                        <Eye className="w-4 h-4 mr-2" />
-                        Подробнее
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        data-material-id={material.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDownload(material);
-                        }}
-                        className="flex-1"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Скачать
-                      </Button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-
-          {/* No Results */}
-          {filteredMaterials.length === 0 && materials.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-20"
-            >
-              <div className="w-24 h-24 bg-gray-100 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <Search className="w-12 h-12 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Материалы не найдены
-              </h3>
-              <p className="text-gray-600">
-                Попробуйте выбрать другую категорию или свяжитесь с нами
-              </p>
-            </motion.div>
-          )}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-900 to-blue-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold text-white mb-6">
-              Нужны дополнительные материалы?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
-              Свяжитесь с нами для получения дополнительной документации, 
-              технических спецификаций или индивидуальных консультаций.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="secondary" size="lg">
-                Связаться с нами
-              </Button>
-              <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-blue-900">
-                Запросить материалы
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Modal: Material Details */}
+      {/* Модальное окно для просмотра PDF */}
       {selectedMaterial && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] flex items-center justify-center p-4"
-          onClick={(e) => {
-            if (e.currentTarget === e.target) setSelectedMaterial(null);
-          }}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.97 }}
-            transition={{ duration: 0.2 }}
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl flex items-center justify-center">
-                  {React.createElement(getFileIcon(selectedMaterial.file_type), { className: 'w-6 h-6 text-white' })}
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-900">{selectedMaterial.name}</h3>
-                  <p className="text-gray-600">{selectedMaterial.category}</p>
-                </div>
-              </div>
-              <button className="p-2 hover:bg-gray-100 rounded-lg" onClick={() => setSelectedMaterial(null)}>
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6 space-y-6">
-              <p className="text-gray-700">{selectedMaterial.description}</p>
-              <div className="grid grid-cols-2 gap-4 bg-gray-50 p-4 rounded-xl">
-                <div className="text-sm">
-                  <span className="text-gray-500">Тип:</span>
-                  <div className="text-gray-800 font-medium">{selectedMaterial.file_type.toUpperCase()}</div>
-                </div>
-                <div className="text-sm">
-                  <span className="text-gray-500">Размер:</span>
-                  <div className="text-gray-800 font-medium">{selectedMaterial.file_size}</div>
-                </div>
-                <div className="text-sm">
-                  <span className="text-gray-500">Дата загрузки:</span>
-                  <div className="text-gray-800 font-medium">{selectedMaterial.upload_date}</div>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {selectedMaterial.tags.map((tag, idx) => (
-                  <span key={idx} className="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                    {tag}
-                  </span>
-                ))}
-              </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-4xl h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b">
               <div>
-                <Button
-                  size="lg"
-                  className="w-full"
-                  data-material-id={selectedMaterial.id}
-                  onClick={() => handleDownload(selectedMaterial)}
-                >
-                  <Download className="w-5 h-5 mr-2" /> Скачать {selectedMaterial.file_type.toUpperCase()}
-                </Button>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  {selectedMaterial.name}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {selectedMaterial.description}
+                </p>
               </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCloseModal}
+                className="flex items-center"
+              >
+                <X className="w-4 h-4 mr-2" />
+                Закрыть
+              </Button>
             </div>
-          </motion.div>
+            
+            <div className="flex-1 p-4">
+              {isPdfLoading && (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Загрузка документа...</p>
+                  </div>
+                </div>
+              )}
+              
+              <iframe
+                src={`${selectedMaterial.download_url}#toolbar=0&navpanes=0&scrollbar=0`}
+                className="w-full h-full border-0"
+                onLoad={() => setIsPdfLoading(false)}
+                style={{ display: isPdfLoading ? 'none' : 'block' }}
+              />
+            </div>
+            
+            <div className="flex items-center justify-between p-4 border-t bg-gray-50">
+              <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <span>PDF</span>
+                <span></span>
+                <span>{selectedMaterial.file_size}</span>
+                <span></span>
+                <span>{selectedMaterial.downloads} скачиваний</span>
+              </div>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => handleDownload(selectedMaterial)}
+                className="flex items-center"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Скачать PDF
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

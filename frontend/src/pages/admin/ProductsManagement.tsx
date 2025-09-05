@@ -25,6 +25,8 @@ interface Product {
   description: string;
   features: string[];
   image_path: string;
+  images?: string[];
+  videos?: string[];
   status: 'active' | 'inactive';
   created_at: string;
 }
@@ -81,8 +83,11 @@ const ProductsManagement: React.FC = () => {
 
   const handleAddProduct = async (productData: Partial<Product>) => {
     try {
+      console.log('Сохранение продукта:', productData);
+      
       if (editingProduct) {
         // Обновление существующего продукта
+        console.log('Обновление продукта ID:', editingProduct.id);
         const response = await fetch(`http://localhost:8000/api/v1/products/${editingProduct.id}`, {
           method: 'PUT',
           headers: {
@@ -96,11 +101,13 @@ const ProductsManagement: React.FC = () => {
         }
 
         const updatedProduct = await response.json();
+        console.log('Продукт обновлен:', updatedProduct);
         setProducts(prev => prev.map(p => 
           p.id === editingProduct.id ? updatedProduct : p
         ));
       } else {
         // Создание нового продукта
+        console.log('Создание нового продукта');
         const response = await fetch('http://localhost:8000/api/v1/products/', {
           method: 'POST',
           headers: {
@@ -114,6 +121,7 @@ const ProductsManagement: React.FC = () => {
         }
 
         const newProduct = await response.json();
+        console.log('Новый продукт создан:', newProduct);
         setProducts(prev => [...prev, newProduct]);
       }
 
@@ -274,8 +282,31 @@ const ProductsManagement: React.FC = () => {
             <Card className="overflow-hidden h-full">
               {/* Product Image */}
               <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-transparent"></div>
-                <div className="absolute inset-0 flex items-center justify-center">
+                {product.image_path ? (
+                  <img
+                    src={`http://localhost:8000/${product.image_path}`}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    onLoad={() => {
+                      console.log('Изображение продукта загружено успешно:', product.image_path);
+                    }}
+                    onError={(e) => {
+                      console.error('Ошибка загрузки изображения продукта:', {
+                        imagePath: product.image_path,
+                        fullUrl: `http://localhost:8000/${product.image_path}`,
+                        productId: product.id,
+                        productName: product.name
+                      });
+                      e.currentTarget.style.display = 'none';
+                      // Показываем fallback иконку при ошибке
+                      const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                      if (fallback) fallback.style.display = 'flex';
+                    }}
+                  />
+                ) : null}
+                
+                {/* Fallback иконка когда нет изображения или ошибка загрузки */}
+                <div className={`absolute inset-0 flex items-center justify-center ${product.image_path ? 'hidden' : 'flex'}`}>
                   <Package className="w-16 h-16 text-blue-600" />
                 </div>
                 
@@ -286,6 +317,20 @@ const ProductsManagement: React.FC = () => {
                     : 'bg-gray-100 text-gray-800'
                 }`}>
                   {product.status === 'active' ? 'Активен' : 'Неактивен'}
+                </div>
+
+                {/* Media Count Badges */}
+                <div className="absolute bottom-3 left-3 flex space-x-2">
+                  {product.images && product.images.length > 0 && (
+                    <div className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      +{product.images.length} фото
+                    </div>
+                  )}
+                  {product.videos && product.videos.length > 0 && (
+                    <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      +{product.videos.length} видео
+                    </div>
+                  )}
                 </div>
               </div>
 

@@ -6,7 +6,7 @@ import { useApplicationModal } from '../../App';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { isApplicationModalOpen, setIsApplicationModalOpen } = useApplicationModal();
+  const { setIsApplicationModalOpen } = useApplicationModal();
   const location = useLocation();
 
   // Закрытие мобильного меню при изменении маршрута
@@ -75,14 +75,14 @@ const Header: React.FC = () => {
           >
             <Link to="/" className="flex items-center space-x-2" aria-label="Главная страница">
               <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-blue-700 to-blue-900 rounded-lg flex items-center justify-center shadow-lg">
-                <span className="text-white font-bold text-lg lg:text-xl">ИМ</span>
+                <span className="text-white font-bold text-lg lg:text-xl">IM</span>
               </div>
               <div className="hidden sm:block">
                 <h1 className={`text-lg lg:text-xl font-bold ${headerClasses.textMain} whitespace-nowrap`}>
-                  Инокс Металл Арт
+                  INOX METAL ART
                 </h1>
                 <p className={`text-xs lg:text-sm ${headerClasses.textSecondary} whitespace-nowrap font-medium`}>
-                  Премиальная нержавеющая сталь
+                  By HWA LIN Stainless Steel
                 </p>
               </div>
             </Link>

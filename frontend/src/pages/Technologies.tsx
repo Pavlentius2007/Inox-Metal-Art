@@ -694,7 +694,12 @@ const Technologies: React.FC = () => {
 
                   {/* Actions */}
                   <div className="flex justify-center">
-                    <Button variant="outline" size="sm" fullWidth>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      fullWidth
+                      onClick={() => setSelectedTechnology(tech)}
+                    >
                       <Eye className="w-4 h-4 mr-2" />
                       Подробнее
                     </Button>
