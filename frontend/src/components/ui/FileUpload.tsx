@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Upload, X, File, Image, Video, FileText } from 'lucide-react';
 import Button from './Button';
 
@@ -132,7 +132,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
     if (multiple) {
       onFilesSelect?.(updatedFiles);
     } else if (updatedFiles.length === 0) {
-      onFileSelect?.(new File([], ''));
+      onFileSelect?.(null as any);
     }
   };
 

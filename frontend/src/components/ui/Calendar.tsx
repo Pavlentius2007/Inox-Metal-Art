@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface CalendarEvent {
@@ -11,7 +11,7 @@ interface CalendarEvent {
   description?: string;
 }
 
-interface CalendarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+interface CalendarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   value?: Date;
   defaultValue?: Date;
   onChange?: (date: Date) => void;
@@ -260,7 +260,7 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(({
         <span>{date.getDate()}</span>
         {dayEvents.length > 0 && (
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex space-x-0.5">
-            {dayEvents.slice(0, 3).map((event, index) => (
+            {dayEvents.slice(0, 3).map((event) => (
               <div
                 key={event.id}
                 className={cn(
@@ -362,7 +362,7 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        {...props}
+        {...(props as any)}
       >
         {/* Заголовок */}
         {showHeader && (

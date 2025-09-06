@@ -1,9 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronUp, ChevronDown, Search, Filter } from 'lucide-react';
+import { ChevronUp, ChevronDown, Search } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import Button from './Button';
-import Input from './Input';
 
 interface Column<T> {
   key: keyof T;
@@ -54,7 +53,7 @@ function Table<T extends Record<string, any>>({
     key: keyof T;
     direction: 'asc' | 'desc';
   } | null>(null);
-  const [filters, setFilters] = useState<Record<keyof T, string>>({});
+  const [filters, setFilters] = useState<Record<keyof T, string>>({} as Record<keyof T, string>);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<T[]>([]);

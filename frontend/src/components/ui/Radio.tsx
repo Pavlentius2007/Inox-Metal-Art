@@ -9,7 +9,7 @@ interface RadioOption {
   description?: string;
 }
 
-interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
   label?: string;
   error?: string;
   helpText?: string;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Users, Package, TrendingUp, FileText, Award } from 'lucide-react';
+import { Package, TrendingUp, FileText, Award } from 'lucide-react';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 

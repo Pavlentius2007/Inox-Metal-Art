@@ -89,7 +89,7 @@ const Divider: React.FC<DividerProps> = ({
         whileInView="visible"
         viewport={{ once: true, margin: "-50px" }}
         variants={animationVariants}
-        transformOrigin={orientation === 'horizontal' ? 'left' : 'top'}
+        style={{ transformOrigin: orientation === 'horizontal' ? 'left' : 'top' }}
         {...props}
       />
     );

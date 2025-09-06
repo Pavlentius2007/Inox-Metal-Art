@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import { 
   Upload, 
   FileText, 
-  Tag, 
   Save, 
   X, 
   Plus,
@@ -12,7 +11,7 @@ import {
 import Button from '../ui/Button';
 
 interface Material {
-  id?: number;
+  id: number;
   name: string;
   description: string;
   category: string;
@@ -24,6 +23,8 @@ interface Material {
   is_active: boolean;
   sort_order: number;
   is_featured: boolean;
+  upload_date: string;
+  downloads: number;
 }
 
 interface MaterialFormProps {
@@ -34,6 +35,7 @@ interface MaterialFormProps {
 
 const MaterialForm: React.FC<MaterialFormProps> = ({ material, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState<Material>({
+    id: 0,
     name: '',
     description: '',
     category: 'catalogs',
@@ -44,7 +46,9 @@ const MaterialForm: React.FC<MaterialFormProps> = ({ material, onSubmit, onCance
     tags: [],
     is_active: true,
     sort_order: 0,
-    is_featured: false
+    is_featured: false,
+    upload_date: '',
+    downloads: 0
   });
 
   const [newTag, setNewTag] = useState('');

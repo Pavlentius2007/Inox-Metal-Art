@@ -1,6 +1,6 @@
 import React, { forwardRef } from 'react';
 import { motion } from 'framer-motion';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface Step {
@@ -148,7 +148,7 @@ const Stepper = forwardRef<HTMLDivElement, StepperProps>(({
     if (status === 'error') return currentVariant.stepError;
     if (status === 'completed') return currentVariant.stepCompleted;
     if (index === currentStep) return currentVariant.stepCurrent;
-    if (status === 'disabled') return currentVariant.stepDisabled;
+    // if (status === 'disabled') return currentVariant.stepDisabled;
     return currentVariant.step;
   };
 
@@ -161,7 +161,7 @@ const Stepper = forwardRef<HTMLDivElement, StepperProps>(({
     if (status === 'error') return cn(baseIconClasses, currentVariant.iconError);
     if (status === 'completed') return cn(baseIconClasses, currentVariant.iconCompleted);
     if (index === currentStep) return cn(baseIconClasses, currentVariant.iconCurrent);
-    if (status === 'disabled') return cn(baseIconClasses, currentVariant.iconDisabled);
+    // if (status === 'disabled') return cn(baseIconClasses, currentVariant.iconDisabled);
     return cn(baseIconClasses, currentVariant.icon);
   };
 
@@ -312,7 +312,7 @@ const Stepper = forwardRef<HTMLDivElement, StepperProps>(({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        {...props}
+        {...(props as any)}
       >
         {steps.map((step, index) => renderStep(step, index))}
       </motion.div>

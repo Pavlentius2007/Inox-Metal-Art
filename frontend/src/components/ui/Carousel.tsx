@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Circle } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface CarouselProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
@@ -36,7 +36,7 @@ const Carousel = forwardRef<HTMLDivElement, CarouselProps>(({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(autoPlay);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const autoPlayRef = useRef<NodeJS.Timeout | null>(null);
+  const autoPlayRef = useRef<number | null>(null);
   const touchStartRef = useRef<number | null>(null);
   const touchEndRef = useRef<number | null>(null);
 
@@ -323,7 +323,7 @@ const Carousel = forwardRef<HTMLDivElement, CarouselProps>(({
         role="region"
         aria-label="Карусель"
         aria-live="polite"
-        {...props}
+        {...(props as any)}
       >
         {renderContent()}
         {renderArrows()}

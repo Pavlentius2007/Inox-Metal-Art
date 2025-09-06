@@ -1,6 +1,6 @@
 import React, { forwardRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Camera, Edit3 } from 'lucide-react';
+import { User, Camera } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface AvatarProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
@@ -36,7 +36,6 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(({
   ...props
 }, ref) => {
   const [imageError, setImageError] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
 
   // Размеры
   const sizes = {
@@ -196,8 +195,6 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(({
     return (
       <div
         className={editButtonClasses}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         <label className="cursor-pointer w-full h-full flex items-center justify-center">
           <input
@@ -233,9 +230,7 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(({
           stiffness: 200
         }}
         whileHover={editable ? { scale: 1.05 } : {}}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        {...props}
+        {...(props as any)}
       >
         {renderContent()}
       </motion.div>
@@ -246,8 +241,6 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(({
     <div
       ref={ref}
       className={baseClasses}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
       {...props}
     >
       {renderContent()}

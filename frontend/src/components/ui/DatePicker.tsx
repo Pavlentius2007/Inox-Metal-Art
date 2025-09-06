@@ -1,10 +1,10 @@
 import React, { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import CalendarComponent from './Calendar';
 
-interface DatePickerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+interface DatePickerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   value?: Date;
   defaultValue?: Date;
   onChange?: (date: Date) => void;
@@ -338,7 +338,7 @@ const DatePicker = forwardRef<HTMLDivElement, DatePickerProps>(({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        {...props}
+        {...(props as any)}
       >
         <div ref={containerRef} className="relative">
           {renderInput()}

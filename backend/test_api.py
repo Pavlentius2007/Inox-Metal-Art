@@ -1,39 +1,24 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Тест API материалов
-"""
 
 import requests
 import json
 
-def test_materials_api():
-    """Тестирует API материалов"""
+def test_products_api():
     try:
-        # Тест получения списка материалов
-        response = requests.get("http://localhost:8000/api/v1/materials/")
-        print(f"Status: {response.status_code}")
+        # Тестируем API продуктов
+        response = requests.get("http://localhost:8000/api/v1/products/")
+        print(f"Status Code: {response.status_code}")
+        print(f"Headers: {dict(response.headers)}")
         
         if response.status_code == 200:
             data = response.json()
-            print(f"Total materials: {data.get('total', 0)}")
-            
-            # Показываем первые 3 материала
-            materials = data.get('materials', [])
-            for i, material in enumerate(materials[:3]):
-                print(f"\n{i+1}. {material['name']}")
-                print(f"   Category: {material['category']}")
-                print(f"   Type: {material['file_type']}")
-                print(f"   Size: {material['file_size']}")
+            print(f"Response: {json.dumps(data, indent=2, ensure_ascii=False)}")
         else:
-            print(f"Error: {response.text}")
+            print(f"Error Response: {response.text}")
             
-    except requests.exceptions.ConnectionError:
-        print("❌ Не удается подключиться к серверу. Запустите сервер командой:")
-        print("   python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000")
     except Exception as e:
-        print(f"❌ Ошибка: {e}")
+        print(f"Ошибка при тестировании API: {e}")
 
 if __name__ == "__main__":
-    print("🧪 Тестирую API материалов...")
-    test_materials_api()
+    test_products_api()

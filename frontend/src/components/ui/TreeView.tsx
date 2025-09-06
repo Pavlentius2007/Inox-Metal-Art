@@ -202,7 +202,7 @@ const TreeView = forwardRef<HTMLDivElement, TreeViewProps>(({
         ? selectedItemClasses 
         : itemClasses;
 
-    const indentStyle = level > 0 ? { marginLeft: `${level * currentSize.indent.replace('ml-', '')}px` } : {};
+    const indentStyle = level > 0 ? { marginLeft: `${level * 20}px` } : {};
 
     const nodeContent = (
       <div
@@ -331,7 +331,7 @@ const TreeView = forwardRef<HTMLDivElement, TreeViewProps>(({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        {...props}
+        {...(props as any)}
       >
         {renderTree()}
       </motion.div>

@@ -1,9 +1,9 @@
 import React, { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { Clock, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-interface TimePickerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+interface TimePickerProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   value?: Date;
   defaultValue?: Date;
   onChange?: (time: Date) => void;
@@ -42,7 +42,6 @@ const TimePicker = forwardRef<HTMLDivElement, TimePickerProps>(({
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState<Date | null>(controlledValue || defaultValue || null);
   const [inputValue, setInputValue] = useState('');
-  const [activeSection, setActiveSection] = useState<'hours' | 'minutes' | 'seconds' | 'period'>('hours');
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -429,7 +428,7 @@ const TimePicker = forwardRef<HTMLDivElement, TimePickerProps>(({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        {...props}
+        {...(props as any)}
       >
         <div ref={containerRef} className="relative">
           {renderInput()}

@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, Check, Search } from 'lucide-react';
+import { ChevronDown, Check, Search, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface SelectOption {
@@ -158,14 +158,7 @@ const Select = forwardRef<HTMLDivElement, SelectProps>(({
     : options;
 
   // Получение выбранных опций
-  const getSelectedOptions = () => {
-    if (multiple) {
-      return options.filter(option => selectedValues.includes(option.value));
-    }
-    return options.filter(option => option.value === value);
-  };
 
-  const selectedOptions = getSelectedOptions();
 
   // Обработчики
   const handleToggle = () => {

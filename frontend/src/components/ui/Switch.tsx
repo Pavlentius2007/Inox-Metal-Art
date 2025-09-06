@@ -2,7 +2,7 @@ import React, { forwardRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
-interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+interface SwitchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'size'> {
   label?: string;
   error?: string;
   helpText?: string;

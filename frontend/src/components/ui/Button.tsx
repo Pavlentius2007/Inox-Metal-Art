@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
-import { designTokens } from '../../lib/design-tokens';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'success' | 'warning' | 'error';
@@ -102,7 +101,7 @@ const Button: React.FC<ButtonProps> = ({
       variants={buttonVariants}
       whileHover={isDisabled ? "disabled" : "hover"}
       whileTap={isDisabled ? "disabled" : "tap"}
-      {...props}
+      {...(props as any)}
     >
       {/* Ripple эффект */}
       <motion.div

@@ -141,7 +141,7 @@ const Timeline = forwardRef<HTMLDivElement, TimelineProps>(({
     currentSize.connector
   );
 
-  const renderConnector = (index: number, isLast: boolean) => {
+  const renderConnector = (_index: number, isLast: boolean) => {
     if (!showConnectors || isLast) return null;
 
     if (orientation === 'vertical') {
@@ -216,7 +216,7 @@ const Timeline = forwardRef<HTMLDivElement, TimelineProps>(({
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        {...props}
+        {...(props as any)}
       >
         {items.map((item, index) => (
           <motion.div

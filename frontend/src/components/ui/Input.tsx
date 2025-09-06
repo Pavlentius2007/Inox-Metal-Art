@@ -1,9 +1,9 @@
 import React, { forwardRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Search, X } from 'lucide-react';
+import { Eye, EyeOff, X } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   label?: string;
   error?: string;
   helpText?: string;

@@ -193,10 +193,6 @@ const Pagination = forwardRef<HTMLDivElement, PaginationProps>(({
     direction: 'left' | 'right'
   ) => {
     const buttonClass = disabled ? disabledButtonClasses : buttonClasses;
-    const iconClass = cn(
-      currentSize.icon,
-      direction === 'left' ? 'mr-1' : 'ml-1'
-    );
 
     const button = (
       <button
@@ -249,7 +245,7 @@ const Pagination = forwardRef<HTMLDivElement, PaginationProps>(({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
         aria-label="Навигация по страницам"
-        {...props}
+        {...(props as any)}
       >
         {/* Кнопка "Первая страница" */}
         {showFirstLast && (

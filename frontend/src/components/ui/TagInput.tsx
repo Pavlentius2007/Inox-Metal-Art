@@ -1,5 +1,5 @@
 import React, { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { X, Plus, Tag } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -146,11 +146,6 @@ const TagInput = forwardRef<HTMLDivElement, TagInputProps>(({
     disabled && currentVariant.inputDisabled
   );
 
-  const iconClasses = cn(
-    'flex-shrink-0',
-    currentSize.icon,
-    currentVariant.icon
-  );
 
   const buttonClasses = cn(
     'flex-shrink-0 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
@@ -255,7 +250,7 @@ const TagInput = forwardRef<HTMLDivElement, TagInputProps>(({
     onChange?.(newTags);
     onTagAdd?.(tag);
     setInputValue('');
-  }, [tag, disabled, readOnly, validateTagInput, maxTags, tags, onChange, onTagAdd]);
+  }, [disabled, readOnly, validateTagInput, maxTags, tags, onChange, onTagAdd]);
 
   const removeTag = useCallback((tagToRemove: string) => {
     if (disabled || readOnly) return;
@@ -305,7 +300,7 @@ const TagInput = forwardRef<HTMLDivElement, TagInputProps>(({
     onChange?.([]);
   }, [onChange]);
 
-  const handleTagKeyDown = useCallback((e: React.KeyboardEvent, tag: string) => {
+  const handleTagKeyDown = useCallback((e: React.KeyboardEvent, _tag: string) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       saveEditedTag(inputValue.trim());
@@ -403,7 +398,7 @@ const TagInput = forwardRef<HTMLDivElement, TagInputProps>(({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        {...props}
+        {...(props as any)}
       >
         <div ref={containerRef} className="relative">
           <div className={containerClasses}>

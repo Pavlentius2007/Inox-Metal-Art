@@ -34,7 +34,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({
     
     let currentPath = '';
     
-    pathSegments.forEach((segment, index) => {
+    pathSegments.forEach((segment) => {
       currentPath += `/${segment}`;
       
       // Преобразуем сегмент в читаемый текст

@@ -2,7 +2,7 @@ import React, { forwardRef, useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '../../lib/utils';
 
-interface SliderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+interface SliderProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   min?: number;
   max?: number;
   step?: number;
@@ -135,7 +135,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(({
     orientation === 'horizontal' ? 'w-full' : 'h-full'
   );
 
-  const getThumbClasses = (index: number, isActive: boolean) => cn(
+  const getThumbClasses = (_index: number, isActive: boolean) => cn(
     'absolute rounded-full shadow-lg transition-all duration-200 cursor-pointer',
     currentSize.thumb,
     isActive && currentSize.thumbActive,
@@ -367,7 +367,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>(({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
-        {...props}
+        {...(props as any)}
       >
         {label && (
           <motion.label

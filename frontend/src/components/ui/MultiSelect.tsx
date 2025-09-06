@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronDown, X, Check, Search as SearchIcon } from 'lucide-react';
+import { ChevronDown, X, Check } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface Option {
@@ -12,7 +12,7 @@ interface Option {
   group?: string;
 }
 
-interface MultiSelectProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+interface MultiSelectProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'defaultValue'> {
   options: Option[];
   value?: (string | number)[];
   defaultValue?: (string | number)[];
@@ -154,11 +154,6 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(({
     disabled && currentVariant.inputDisabled
   );
 
-  const iconClasses = cn(
-    'flex-shrink-0',
-    currentSize.icon,
-    currentVariant.icon
-  );
 
   const buttonClasses = cn(
     'flex-shrink-0 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
@@ -470,7 +465,7 @@ const MultiSelect = forwardRef<HTMLDivElement, MultiSelectProps>(({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        {...props}
+        {...(props as any)}
       >
         <div ref={containerRef} className="relative">
           <div className={containerClasses}>

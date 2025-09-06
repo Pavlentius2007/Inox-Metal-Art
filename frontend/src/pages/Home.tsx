@@ -16,12 +16,10 @@ import {
 } from 'lucide-react';
 import Button from '../components/ui/Button';
 import CertificateModal from '../components/modals/CertificateModal';
-import { useApplicationModal } from '../App';
 import '../styles/home.css';
 
 const Home: React.FC = () => {
   // Состояние для модального окна заявки
-  const { isApplicationModalOpen, setIsApplicationModalOpen } = useApplicationModal();
   
   // Состояние для модального окна сертификата
   const [certificateModal, setCertificateModal] = useState<{
@@ -39,9 +37,6 @@ const Home: React.FC = () => {
   });
   
   // Функция для открытия модального окна заявки
-  const openApplicationModal = () => {
-    setIsApplicationModalOpen(true);
-  };
 
   // Функция для открытия модального окна сертификата
   const openCertificateModal = (title: string, description: string, pdfPath: string, icon: React.ReactNode) => {
@@ -448,7 +443,7 @@ const Home: React.FC = () => {
                     </p>
                     {product.features && product.features.length > 0 && (
                       <div className="space-y-2 mb-4">
-                        {product.features.map((feature, idx) => (
+                        {product.features.map((feature: string, idx: number) => (
                           <div key={idx} className="flex items-center space-x-2 text-sm text-gray-600">
                             <CheckCircle className="w-4 h-4 text-green-500" />
                             <span>{feature}</span>

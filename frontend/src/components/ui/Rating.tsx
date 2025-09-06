@@ -36,7 +36,6 @@ const Rating = forwardRef<HTMLDivElement, RatingProps>(({
   ...props
 }, ref) => {
   const [hoverValue, setHoverValue] = useState<number | null>(null);
-  const [isHovering, setIsHovering] = useState(false);
 
   // Размеры
   const sizes = {
@@ -112,20 +111,6 @@ const Rating = forwardRef<HTMLDivElement, RatingProps>(({
     return starClasses;
   };
 
-  const getHoverClasses = (index: number, isHalf = false) => {
-    if (!isHovering) return '';
-    
-    const hoverValue = this.hoverValue;
-    if (hoverValue === null) return '';
-    
-    const starValue = isHalf ? index + 0.5 : index + 1;
-    
-    if (hoverValue >= starValue) {
-      return currentVariant.starHover;
-    }
-    
-    return '';
-  };
 
   const handleStarClick = useCallback((clickedValue: number) => {
     if (readOnly || !onChange) return;
@@ -149,13 +134,11 @@ const Rating = forwardRef<HTMLDivElement, RatingProps>(({
   const handleStarHover = useCallback((hoverValue: number | null) => {
     if (readOnly) return;
     setHoverValue(hoverValue);
-    setIsHovering(hoverValue !== null);
   }, [readOnly]);
 
   const handleMouseLeave = useCallback(() => {
     if (readOnly) return;
     setHoverValue(null);
-    setIsHovering(false);
   }, [readOnly]);
 
   const renderStar = (index: number) => {
@@ -305,7 +288,7 @@ const Rating = forwardRef<HTMLDivElement, RatingProps>(({
         transition={{ duration: 0.3 }}
         role="group"
         aria-label={`Рейтинг: ${value} из ${maxValue}`}
-        {...props}
+        {...(props as any)}
       >
         {renderStars()}
         {renderValue()}

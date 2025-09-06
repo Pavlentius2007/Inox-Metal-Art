@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle, AlertCircle, Info, XCircle, Bell } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
-interface NotificationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+interface NotificationProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange' | 'id'> {
   id?: string | number;
   title?: string;
   message: string;

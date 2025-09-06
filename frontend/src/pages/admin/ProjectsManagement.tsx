@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Eye, RefreshCw, Star, Building, MapPin, Calendar, Ruler } from 'lucide-react';
+import { Plus, Edit, Trash2, RefreshCw, Star, Building, MapPin, Calendar, Ruler } from 'lucide-react';
 import Button from '../../components/ui/Button';
 import Modal from '../../components/ui/Modal';
 import ProjectForm from '../../components/admin/ProjectForm';
@@ -101,7 +101,7 @@ const ProjectsManagement: React.FC = () => {
       } else {
         setProjects(data.projects);
         const uniqueCategories = [...new Set(data.projects.map((p: Project) => p.category))];
-        setCategories(uniqueCategories);
+        setCategories(uniqueCategories as string[]);
       }
     } catch (err) {
       console.error('Fetch error:', err);

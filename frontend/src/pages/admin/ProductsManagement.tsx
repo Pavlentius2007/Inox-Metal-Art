@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   Plus, 
   Search, 
-  Filter, 
   Edit, 
   Trash2, 
-  Eye,
   Package,
-  Palette,
   Star,
-  Shield,
   RefreshCw
 } from 'lucide-react';
 import Button from '../../components/ui/Button';

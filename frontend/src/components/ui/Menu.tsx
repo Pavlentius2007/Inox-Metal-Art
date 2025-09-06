@@ -288,7 +288,7 @@ const Menu = forwardRef<HTMLDivElement, MenuProps>(({
         tabIndex={item.disabled ? -1 : 0}
         aria-disabled={item.disabled}
         aria-expanded={hasChildren ? isActive : undefined}
-        aria-checked={item.radio ? isRadioSelected : item.checked !== undefined ? isSelected : undefined}
+        aria-checked={item.radio ? (isRadioSelected ? "true" : "false") : item.checked !== undefined ? (isSelected ? "true" : "false") : undefined}
       >
         <div className="flex items-center space-x-2">
           {item.icon && (
@@ -365,7 +365,6 @@ const Menu = forwardRef<HTMLDivElement, MenuProps>(({
           currentVariant.submenu,
           'py-1',
           submenuPlacement === 'right' ? 'left-full ml-1' : 'right-full mr-1',
-          submenuAlign === 'center' ? 'top-1/2 -translate-y-1/2' : 
           submenuAlign === 'end' ? 'bottom-0' : 'top-0'
         )}
       >

@@ -254,3 +254,4 @@ def import_full_catalog():
 if __name__ == "__main__":
     import_full_catalog()
 
+

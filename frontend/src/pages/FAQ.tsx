@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp, HelpCircle, Mail, Phone, MapPin } from 'lucide-react';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
 
 interface FAQItem {
   question: string;
@@ -105,8 +103,6 @@ const FAQ: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      <Header />
-      
       {/* Hero Section */}
       <section className="pt-24 pb-16 bg-gradient-to-br from-blue-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -226,27 +222,10 @@ const FAQ: React.FC = () => {
                  </a>
               </div>
               
-              <div className="bg-white rounded-xl p-6 shadow-lg">
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <MapPin className="w-6 h-6 text-green-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">Завод в Таиланде</h3>
-                <p className="text-gray-600 mb-2">7RQ3+783, Nong Chumphon, Khao Yoi District, Phetchaburi 76140, Таиланд</p>
-                <a 
-                  href="https://maps.app.goo.gl/tXCwNfqSrTMATTvK8"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:text-blue-700 text-sm transition-colors duration-200"
-                >
-                  Посмотреть на карте
-                </a>
-              </div>
             </div>
           </motion.div>
         </div>
       </section>
-
-      <Footer />
     </div>
   );
 };
